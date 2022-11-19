@@ -1,0 +1,14 @@
+# ninja log v5
+100	2201	601326569	build/win64/colouredToGray_terminate.o	99353b0d0ce340a
+118	2219	601326569	build/win64/_coder_colouredToGray_info.o	329da37316f95755
+175	2229	601326569	build/win64/colouredToGray_data.o	d6a9a13807262a75
+147	2230	601326569	build/win64/colouredToGray_mexutil.o	886b22dd8bb63777
+129	2233	601326569	build/win64/_coder_colouredToGray_api.o	5db19940df9df903
+109	2237	601326569	build/win64/GreenChannel.o	31df04ef407e32da
+158	2238	601326569	build/win64/colouredToGray.o	c996714e6fe1015f
+2	2243	601326569	build/win64/colouredToGray_initialize.o	b5418335d351baba
+166	2245	601326569	build/win64/BlueChannel.o	2f459e6aa7062865
+138	2246	601326569	build/win64/RedChannel.o	7d113c25d42b009a
+2203	2470	601326569	build/win64/_coder_colouredToGray_mex.o	de2a5f8835777102
+2221	2477	601326569	build/win64/c_mexapi_version.o	c4665ebeda4a6830
+2478	3783	601326570	colouredToGray_mex.mexw64	de41e89238271a51

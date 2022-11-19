@@ -1,0 +1,14 @@
+MEX {
+	global:
+		mexFunction;
+		mexfilerequiredapiversion;
+		emlrtMexFcnProperties;
+		colouredToGray;
+		emlrtGetRootTLSGlobal;
+		emlrtLockerFunction;
+		colouredToGray_initialize;
+		colouredToGray_terminate;
+		colouredToGray_atexit;
+	local:
+		*;
+};
