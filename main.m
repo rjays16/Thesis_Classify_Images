@@ -98,7 +98,7 @@ while true
                   
                   %% Show Warning if detect metal is Bend 
                   fig = uifigure;
-                  message = {'Not Passable!','Detect Bend Metal'};
+                  message = {'The Bridge is unsafe therefore it is not Passable'};
                   uialert(fig,message,'Warning',...
                   'Icon','warning');
                    set(handles.edit2, 'ForegroundColor', 'red', 'string', 'X');
