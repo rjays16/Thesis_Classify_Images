@@ -89,7 +89,7 @@ while true
               set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
               %% check if Metal is Not Bend
                if predictedLabels == 'Passable'
-                   set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                else
                    %% if Metal is Bend
                   %rectangle('Position',[1 1 225 225],'EdgeColor','r','LineWidth',2);
@@ -264,7 +264,6 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.edit1, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
 set(handles.pushbutton1,'enable','on');
 set(handles.pushbutton2,'enable','off');
