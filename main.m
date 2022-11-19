@@ -81,17 +81,15 @@ while true
         
         %% comparing image neural network and camera snaphot
         testImages = picture;
-       
         predictedLabels = classify(myNet, testImages); 
-           image(picture);
-           drawnow;
+          image(picture);
+               drawnow;
            %% check if picture is Metal
-            if predictedLabels == 'Metal_Not_Bend' && predictedLabels == 'Metal_Bend' 
-              set(handles.edit1, 'ForegroundColor', 'green', 'string', char(hex2dec('2713')));
-              
+            if predictedLabels == 'Passable' || predictedLabels == 'Not_Passable' 
+              set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
               %% check if Metal is Not Bend
-               if predictedLabels == 'Metal_Not_Bend'
-                   set(handles.edit1, 'ForegroundColor', 'green', 'string', char(hex2dec('2713')));
+               if predictedLabels == 'Passable'
+                   set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                else
                    %% if Metal is Bend
                   %rectangle('Position',[1 1 225 225],'EdgeColor','r','LineWidth',2);
@@ -100,14 +98,15 @@ while true
                   
                   %% Show Warning if detect metal is Bend 
                   fig = uifigure;
-                  message = {'Detect!','Detect Bend Metal'};
+                  message = {'Not Passable!','Detect Bend Metal'};
                   uialert(fig,message,'Warning',...
                   'Icon','warning');
-                   set(handles.edit2, 'ForegroundColor', 'green', 'string', 'X');
+                   set(handles.edit2, 'ForegroundColor', 'red', 'string', 'X');
                end
             else
                 %% if this is not a Metal
-              set(handles.edit1, 'ForegroundColor', 'green', 'string', 'X');
+              set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');  
+              set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
 end
 
