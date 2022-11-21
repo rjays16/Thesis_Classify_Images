@@ -55,19 +55,29 @@ waitbar(x + 0.4, wb, 'Classify Images...');
 
 %% calling deep learning model tool alexnet
 alex = alexnet;
+
 layers = alex.Layers;
+layers_buckling = alex.Layers;
 
 %% size of layers on alexnet 
-layers(23) = fullyConnectedLayer(4); 
+layers(23) = fullyConnectedLayer(3);
+layers_buckling(23) = fullyConnectedLayer(2); 
+
 layers(25) = classificationLayer;
+layers_buckling(25) = classificationLayer;
 
 %% images to compare 
 allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+allImagesIbuckling = imageDatastore('Check_Image_Buckling', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+
 [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
+[trainingImages_Buckling, testImages_Buckling] = splitEachLabel(allImagesIbuckling, 0.8, 'randomize');
 
 waitbar(x + 0.6, wb, 'Read Sizes of Images...');
 opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
+
 myNet = trainNetwork(trainingImages, layers, opts);
+myNet_Buckling = trainNetwork(trainingImages_Buckling, layers_buckling, opts);
 
 waitbar(x + 0.8, wb, 'Re training Images for classify images');
 waitbar(x + 1, wb, 'Done');
@@ -81,7 +91,8 @@ while true
         
         %% comparing image neural network and camera snaphot
         testImages = picture;
-        predictedLabels = classify(myNet, testImages); 
+        predictedLabels = classify(myNet, testImages);
+        predictedLabels_Buckling = classify(myNet_Buckling, testImages_Buckling);
           image(picture);
                drawnow;
            %% check if picture is Metal
@@ -95,17 +106,26 @@ while true
                   %rectangle('Position',[1 1 225 225],'EdgeColor','r','LineWidth',2);
                   %image(picture);
                   %drawnow limitrate;
-                  if predictedLabels == 'Slight_Not_Passable'
+                  if predictedLabels_Buckling == 'Slight'
+                  
                   fig = uifigure;
                   message = {'Warning','Slightly Bent. light vehicles can pass by'};
-                  uialert(fig,message,'Warning',...
-                  'Icon','warning');
+                  %uialert(fig,message,'Warning',...
+                  %'Icon','warning');
+                  pause('off');
+                   confirm = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
+                   if(confirm == 'OK')
+                       pause('on');
+                   end
                     set(handles.edit2, 'ForegroundColor', 'red', 'string', 'X');  
                   else
                    fig = uifigure;
+                   pause('off');
                   message = {'Warning','The Bridge is unsafe therefore it is not Passable'};
-                  uialert(fig,message,'Warning',...
-                  'Icon','warning');
+                   confirm = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
+                    if(confirm == 'OK')
+                       pause('on');
+                   end
                set(handles.edit2, 'ForegroundColor', 'red', 'string', 'X');   
                   %% Show Warning if detect metal is Bend 
                   end
@@ -117,6 +137,7 @@ while true
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
 end
+
 
 function pushbutton4_Callback(hObject, eventdata, handles)
 
