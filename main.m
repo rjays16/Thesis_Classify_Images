@@ -96,40 +96,21 @@ while true
           image(picture);
                drawnow;
            %% check if picture is Metal
-            if predictedLabels == 'Passable' || predictedLabels == 'Not_Passable' || predictedLabels == 'Slight_Not_Passable'
+            if predictedLabels == 'Buckle' || predictedLabels == 'Not_Buckle'
               set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
               %% check if Metal is Not Bend
-               if predictedLabels == 'Passable'
+               if predictedLabels == 'Buckle'
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-               else
-                   %% if Metal is Bend
-                  %rectangle('Position',[1 1 225 225],'EdgeColor','r','LineWidth',2);
-                  %image(picture);
-                  %drawnow limitrate;
-                  if predictedLabels_Buckling == 'Slight'
-                  
-                  fig = uifigure;
-                  message = {'Warning','Slightly Bent. light vehicles can pass by'};
-                  %uialert(fig,message,'Warning',...
-                  %'Icon','warning');
-                  pause('off');
-                   confirm = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
-                   if(confirm == 'OK')
-                       pause('on');
-                   end
-                    set(handles.edit2, 'ForegroundColor', 'red', 'string', 'X');  
-                  else
                    fig = uifigure;
-                   pause('off');
-                  message = {'Warning','The Bridge is unsafe therefore it is not Passable'};
-                   confirm = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
-                    if(confirm == 'OK')
-                       pause('on');
-                   end
-               set(handles.edit2, 'ForegroundColor', 'red', 'string', 'X');   
-                  %% Show Warning if detect metal is Bend 
+                   pause('off')
+                  message = {'Warning','The Steel Truss of the Bridge buckled'};
+                  confirm  = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
+                  if(confirm == 'OK' || 'Cancel')
+                      pause('on')
                   end
-                  
+               else
+              set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');  
+               pause(6);
                end
             else
                 %% if this is not a Metal
@@ -137,7 +118,6 @@ while true
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
 end
-
 
 function pushbutton4_Callback(hObject, eventdata, handles)
 
