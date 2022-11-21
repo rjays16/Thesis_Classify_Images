@@ -86,11 +86,12 @@ while true
         testImages = picture;
         predictedLabels = classify(myNet, testImages);
           image(picture);
-               drawnow;
+          drawnow;
+          
            %% check if picture is Metal
             if predictedLabels == 'Buckle' || predictedLabels == 'Not_Buckle'
               set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-              %% check if Metal is Bend
+              %% check if Metal is Buckle
                if predictedLabels == 'Buckle'
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                    fig = uifigure;
@@ -104,7 +105,7 @@ while true
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');  
                 fig = uifigure;
                    pause('off')
-                  message = {'Success','The Steel Truss is not buckled'};
+                  message = {'Success','The Steel Truss not buckled'};
                   confirm  = uiconfirm(fig,message,'Success', 'Icon', 'success','CloseFcn',@(h,e) close(fig));
                   if(confirm == 'OK')
                       pause('on')
