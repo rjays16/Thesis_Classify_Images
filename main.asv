@@ -44,6 +44,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 global picture;
 set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
+
 x = 0;
 %% start program 
 wb = waitbar(x,'Start Opening Camera');
@@ -55,29 +56,21 @@ waitbar(x + 0.4, wb, 'Classify Images...');
 
 %% calling deep learning model tool alexnet
 alex = alexnet;
-
 layers = alex.Layers;
-layers_buckling = alex.Layers;
 
 %% size of layers on alexnet 
 layers(23) = fullyConnectedLayer(3);
-layers_buckling(23) = fullyConnectedLayer(2); 
-
 layers(25) = classificationLayer;
-layers_buckling(25) = classificationLayer;
+
 
 %% images to compare 
 allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-allImagesIbuckling = imageDatastore('Check_Image_Buckling', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-
 [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
-[trainingImages_Buckling, testImages_Buckling] = splitEachLabel(allImagesIbuckling, 0.8, 'randomize');
 
 waitbar(x + 0.6, wb, 'Read Sizes of Images...');
 opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
 
 myNet = trainNetwork(trainingImages, layers, opts);
-myNet_Buckling = trainNetwork(trainingImages_Buckling, layers_buckling, opts);
 
 waitbar(x + 0.8, wb, 'Re training Images for classify images');
 waitbar(x + 1, wb, 'Done');
@@ -92,32 +85,38 @@ while true
         %% comparing image neural network and camera snaphot
         testImages = picture;
         predictedLabels = classify(myNet, testImages);
-        predictedLabels_Buckling = classify(myNet_Buckling, testImages_Buckling);
           image(picture);
                drawnow;
            %% check if picture is Metal
             if predictedLabels == 'Buckle' || predictedLabels == 'Not_Buckle'
               set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-              %% check if Metal is Not Bend
+              %% check if Metal is Bend
                if predictedLabels == 'Buckle'
-                   set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   
                    fig = uifigure;
                    pause('off')
                   message = {'Warning','The Steel Truss of the Bridge buckled'};
                   confirm  = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
-                  if(confirm == 'OK' || 'Cancel')
+                  if(confirm == 'OK' || confirm == 'Cancel')
                       pause('on')
                   end
                else
-              set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');  
-               pause(6);
+                   set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+              set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');  
+                fig = uifigure;
+                   pause('off')
+                  message = {'Warning','The Steel Truss of the Bridge buckled'};
+                  confirm  = uiconfirm(fig,message,'Success', 'Icon', 'success','CloseFcn',@(h,e) close(fig));
+                  if(confirm == 'OK' || confirm == 'Cancel')
+                      pause('on')
+                  end
                end
             else
                 %% if this is not a Metal
               set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');  
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
-
+end
 
 function pushbutton4_Callback(hObject, eventdata, handles)
 
