@@ -89,7 +89,7 @@ while true
           drawnow;
           
            %% check if picture is Metal
-            if predictedLabels == 'Buckle' || predictedLabels == 'Not_Buckle'
+            if predictedLabels == 'Buckle' || predictedLabels == 'NotBuckle'
               set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
               %% check if Metal is Buckle
                if predictedLabels == 'Buckle'
