@@ -88,32 +88,31 @@ while true
     
         %% setup db connection 
         conn = database('thesis','root','');
-        
         %% Select all datas from banana process
         curs = exec(conn,'SELECT * FROM banana_process');
-        curs = fetch(curs);
+curs = fetch(curs);
 
-        %% assigning stats for class a
-        a = curs.data(1,3);
-        set(handles.editClassA, 'string', a);
+%% assigning stats for class a
+a = curs.data(1,3);
+set(handles.editClassA, 'string', a);
 
-        %% assigning stats for class b
-        b = curs.data(2,3); 
-        set(handles.editClassB, 'string', b);
+%% assigning stats for class b
+b = curs.data(2,3); 
+set(handles.editClassB, 'string', b);
 
-        %% assigning stats for rejected
-        rejected = curs.data(3,3); 
-        set(handles.editRejected, 'string', rejected);
+%% assigning stats for rejected
+rejected = curs.data(3,3); 
+set(handles.editRejected, 'string', rejected);
 
-        %% overall total test for banana process
-        total = a + b + reject; 
-        set(handles.editTotal, 'string', total);
+%% overall total test for banana process
+total = a + b + reject; 
+set(handles.editTotal, 'string', total);
 
-        %% compare video image into default neural network
-        label = classify(nnet, picture);
+  %% compare video image into default neural network
+  label = classify(nnet, picture);
   
-        %% check condition if the object is banana
-        if label == 'banana'
+  %% check condition if the object is banana
+  if label == 'banana'
       set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
       
       %% train images convolutional neural network for classify banana variety 
@@ -145,6 +144,8 @@ while true
              %% Update banana_process set class={rejected} where id=3
              update(conn,'banana_process',{'class'},{rejected},{'WHERE id=3'});
          end
+         
+         total = a + b + rejected;
          
       else
         set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
