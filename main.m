@@ -76,8 +76,12 @@ waitbar(x + 0.8, wb, 'Re training Images for classify images');
 waitbar(x + 1, wb, 'Done');
 delete(wb);
 
+ %% setup db connection 
+conn = database('thesis','root','');
+
 nnet = alexnet;
 
+        
 %% start looping webcam 
 while true
     %% capture and resizing into 227 video image
@@ -85,9 +89,6 @@ while true
     picture = imresize(picture,[227,227]);
         image(picture);
         drawnow;
-    
-        %% setup db connection 
-        conn = database('thesis','root','');
         
         %% Select all datas from banana process
         curs = exec(conn,'SELECT * FROM banana_process');
@@ -122,22 +123,29 @@ while true
       %% check if the banana is Cavendish 
       if predictedLabels == 'ClassA' || predictedLabels == 'ClassB'
         set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+        set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);
+        
+        %% check the color of the cavendish banana if green or not 
+        diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
+        diff_im = medfilt2(diff_im, [3 3]);
+        diff_im = imbinarize(diff_im,0.18);
+        diff_im = bwareaopen(diff_im,300);
+        bw = bwlabel(diff_im, 8);
+        stats = regionprops(bw, 'BoundingBox', 'Centroid');
         
         %% check the image of what class of the the cavendish (If the banana is cavendish)
-         if predictedLabels == 'ClassA'
+         if predictedLabels == 'ClassA' && ~isempty(stats)
              addClassA = 1;
              a = a + addClassA;
              
              %% Update banana_process set class={a} where id=1
              update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
-             set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);
-         elseif predictedLabels == 'ClassB'
+         elseif predictedLabels == 'ClassB' && ~isempty(stats)
               addClassB = 1;
              b = b + addClassB;
              
              %% Update banana_process set class={b} where id=2
              update(conn,'banana_process',{'class'},{b},{'WHERE id=2'});
-             set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);
          else
               notAccepted = 1;
              rejected = rejected + notAccepted;
