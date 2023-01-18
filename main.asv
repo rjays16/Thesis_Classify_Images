@@ -185,6 +185,7 @@ while true
              update(conn,'banana_process',{'class'},{rejected},{'WHERE id=3'});
              set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
          end
+         
       else
         set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
         set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
