@@ -78,7 +78,6 @@ delete(wb);
 
  %% setup db connection 
 conn = database('thesis','root','');
-
 nnet = alexnet;
 
         
