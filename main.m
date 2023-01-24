@@ -89,24 +89,35 @@ while true
         image(picture);
         drawnow;
         
-        %% Select all datas from banana process
-        curs = exec(conn,'SELECT * FROM banana_process');
-        curs = fetch(curs);
-
+        %% Selecting stats if the banana is class a
+        data_ClassA = exec(conn,'SELECT stats FROM banana_process WHERE id = 1');
+        data_ClassA = fetch(data_ClassA);
+        
+        %% Selecting stats if the banana is class b
+        data_ClassB = exec(conn,'SELECT stats FROM banana_process WHERE id = 2');
+        data_ClassB = fetch(data_ClassB);
+        
+        %% Selecting stats if the banana is class rejected
+        data_Rejected = exec(conn,'SELECT stats FROM banana_process WHERE id = 3');
+        data_Rejected = fetch(data_Rejected);
+        
         %% assigning stats for class a
-        a = curs.data(1,3);
+        a = data_ClassA.Data;
+        ClassA_Interger = a{1};
         set(handles.editClassA, 'string', a);
 
         %% assigning stats for class b
-        b = curs.data(2,3); 
+        b = data_ClassB.Data; 
+        ClassB_Interger = b{1};
         set(handles.editClassB, 'string', b);
 
         %% assigning stats for rejected
-        rejected = curs.data(3,3); 
+        rejected = data_Rejected.Data;
+        rejected_Integer = rejected{1};
         set(handles.editRejected, 'string', rejected);
-
+        
         %% overall total test for banana process
-        total = a + b + reject; 
+        total = ClassA_Interger + ClassB_Interger + rejected_Integer;
         set(handles.editTotal, 'string', total);
 
         %% compare video image into default neural network
@@ -193,7 +204,7 @@ while true
       set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-      set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+      set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');  
   end
 end
@@ -346,6 +357,9 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.edit1, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
+set(handles.edit3, 'ForegroundColor', 'red', 'string', '');
+set(handles.edit4, 'ForegroundColor', 'red', 'string', '');
+set(handles.edit5, 'ForegroundColor', 'red', 'string', '');
 set(handles.pushbutton1,'enable','on');
 set(handles.pushbutton2,'enable','off');
 clear all; clc;
