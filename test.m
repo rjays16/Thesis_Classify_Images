@@ -2,7 +2,7 @@ clear;
 camera = webcam();
 alex = alexnet;
 layers = alex.Layers;
-layers(23) = fullyConnectedLayer(3);
+layers(23) = fullyConnectedLayer(4);
 layers(25) = classificationLayer;
 allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
 [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
