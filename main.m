@@ -59,7 +59,7 @@ alex = alexnet;
 layers = alex.Layers;
 
 %% size of layers on alexnet 
-layers(23) = fullyConnectedLayer(3);
+layers(23) = fullyConnectedLayer(4);
 layers(25) = classificationLayer;
 
 
@@ -79,7 +79,7 @@ delete(wb);
  %% setup db connection 
 conn = database('thesis','root','');
 nnet = alexnet;
-
+status = 0;
         
 %% start looping webcam 
 while true
@@ -90,15 +90,15 @@ while true
         drawnow;
         
         %% Selecting stats if the banana is class a
-        data_ClassA = exec(conn,'SELECT stats FROM banana_process WHERE id = 1');
+        data_ClassA = exec(conn,'SELECT total FROM banana_process WHERE id = 1');
         data_ClassA = fetch(data_ClassA);
         
         %% Selecting stats if the banana is class b
-        data_ClassB = exec(conn,'SELECT stats FROM banana_process WHERE id = 2');
+        data_ClassB = exec(conn,'SELECT total FROM banana_process WHERE id = 2');
         data_ClassB = fetch(data_ClassB);
         
         %% Selecting stats if the banana is class rejected
-        data_Rejected = exec(conn,'SELECT stats FROM banana_process WHERE id = 3');
+        data_Rejected = exec(conn,'SELECT total FROM banana_process WHERE id = 3');
         data_Rejected = fetch(data_Rejected);
         
         %% assigning stats for class a
@@ -125,8 +125,7 @@ while true
   
         %% check condition if the object is banana
         if label == 'banana'
-      set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-      
+      set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));  
       %% train images convolutional neural network for classify banana variety 
       predictedLabels = classify(myNet, testImages);
       
@@ -134,7 +133,6 @@ while true
       if predictedLabels == 'ClassA' || predictedLabels == 'ClassB'
         set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
         set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);
-        
         %% check the color of the cavendish banana if green or not 
         diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
         diff_im = medfilt2(diff_im, [3 3]);
@@ -143,60 +141,77 @@ while true
         bw = bwlabel(diff_im, 8);
         stats = regionprops(bw, 'BoundingBox', 'Centroid');
         
-        %% check the number of numblobs
-        grayImage = picture;
-        [rows, columns, numberOfColorChannels] = size(grayImage);
-        
-        if numberOfColorChannels > 1
-            grayImage = rgb2gray(grayImage);
-        end
-        
-        binaryImage = grayImage == 0;
-        binaryImage = imclearborder(binaryImage);
-        [labeledImage, numBlobs] = bwlabel(binaryImage);
-        coloredLabels = label2rgb (labeledImage, 'hsv', 'k', 'shuffle');
-        props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
-        
-        imshow(picture);
-        hold on;
-        
-        for k = 1 : numBlobs
-            bb = props(k).BoundingBox;
-            bc = props(k).Centroid;
-            rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
-        end
-        
-        drawnow limitrate;
-        
         %% check the image of what class of the the cavendish (If the banana is cavendish)
-         if predictedLabels == 'ClassA' && ~isempty(stats) && isempty(numBlobs) && numBlobs <= 5
+         if predictedLabels == 'ClassA' && ~isempty(stats)
              addClassA = 1;
              a = a + addClassA;
              
              %% Update banana_process set class={a} where id=1
              update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
-             
              set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-             set(handles.edit5, 'ForegroundColor', 'green', 'string', '- NONE');
-         elseif predictedLabels == 'ClassB' && ~isempty(stats) && isempty(numBlobs) && numBlobs <= 5
+             
+              %% for Preprocessing only if status is 1 and 0
+        status = 1;
+        set(handles.txtStatus, 'string', 'Processing');
+        update(conn,'status_table',{'status'},{status});
+        timer = 10;
+            while timer>=1
+                h = msgbox(sprintf('Please wait: %d', timer));
+                pause(1);
+                n = n-1;
+                delete(h);
+            end
+         status = 0;
+         set(handles.txtStatus, 'string', 'Ready');
+         update(conn,'status_table',{'status'},{status});
+         
+         elseif predictedLabels == 'ClassB' && ~isempty(stats)
              addClassB = 1;
              b = b + addClassB;
              
              %% Update banana_process set class={b} where id=2
              update(conn,'banana_process',{'class'},{b},{'WHERE id=2'});
-             
              set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-             set(handles.edit5, 'ForegroundColor', 'green', 'string', '- NONE');
          else
-             set(handles.edit5, 'ForegroundColor', 'r', 'string',numBlobs);
               notAccepted = 1;
              rejected = rejected + notAccepted;
              
              %% Update banana_process set class={rejected} where id=3
              update(conn,'banana_process',{'class'},{rejected},{'WHERE id=3'});
              set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+             
+              %% for Preprocessing only if status is 1 and 0
+        status = 1;
+        set(handles.txtStatus, 'string', 'Processing');
+        update(conn,'status_table',{'status'},{status});
+        timer = 10;
+            while timer>=1
+                h = msgbox(sprintf('Please wait: %d', timer));
+                pause(1);
+                n = n-1;
+                delete(h);
+            end
+         status = 0;
+         set(handles.txtStatus, 'string', 'Ready');
+         update(conn,'status_table',{'status'},{status});
          end
+         
       else
+            %% for Preprocessing only if status is 1 and 0
+        status = 1;
+        set(handles.txtStatus, 'string', 'Processing');
+        update(conn,'status_table',{'status'},{status});
+        timer = 10;
+            while timer>=1
+                h = msgbox(sprintf('Please wait: %d', timer));
+                pause(1);
+                n = n-1;
+                delete(h);
+            end
+         status = 0;
+         set(handles.txtStatus, 'string', 'Ready');
+         update(conn,'status_table',{'status'},{status});
+         
         set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
         set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
       end
@@ -205,7 +220,7 @@ while true
       set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
-      set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');  
+
   end
 end
 
@@ -359,7 +374,7 @@ set(handles.edit1, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit3, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit4, 'ForegroundColor', 'red', 'string', '');
-set(handles.edit5, 'ForegroundColor', 'red', 'string', '');
+
 set(handles.pushbutton1,'enable','on');
 set(handles.pushbutton2,'enable','off');
 clear all; clc;
