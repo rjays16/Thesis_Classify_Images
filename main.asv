@@ -102,8 +102,8 @@ while true
                   message = {'Warning','The Steel Truss of the Bridge buckled'};
                   confirm  = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
                   if(confirm == 'OK')
-                      status = 0;
-                      update(conn,'status_table',{'status'},{status});
+                      status = 1;
+                   update(conn,'status_table',{'status'},{status});
                       pause('on')
                   end
                else
