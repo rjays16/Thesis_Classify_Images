@@ -97,7 +97,6 @@ while true
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                    fig = uifigure;
                    status = 1;
-                   Alphabet
                    update(conn,'status_table',{'status'},{status});
                    imshow(picture)
                    hold on 
