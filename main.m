@@ -75,7 +75,7 @@ myNet = trainNetwork(trainingImages, layers, opts);
 waitbar(x + 0.8, wb, 'Re training Images for classify images');
 waitbar(x + 1, wb, 'Done');
 delete(wb);
-conn = database('thesis','root','');
+conn = database('localhost','root','');
 status = 0;
 %% start looping webcam 
 while true
