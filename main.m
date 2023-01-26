@@ -97,19 +97,20 @@ while true
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                    fig = uifigure;
                    status = 1;
-                   Alphabet
+                   Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                   numbers = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
+                   letters = Alphabet(numbers);
                    update(conn,'status_table',{'status'},{status});
                    imshow(picture)
-                   hold on 
-                   rectangle('Position', [50, 60,50, 50],'EdgeColor', 'red','LineWidth',2);
-                  
-                   pause('off')
+                   hold on; 
+                   rectangle('Position', [50, 60,50, 50],'EdgeColor', 'blue','LineWidth',2);
+                   title(letters,'Color','red','Position',[x y-20],'FontSize',14);
+                   hold off;
                   message = {'Warning','The Steel Truss of the Bridge buckled'};
                   confirm  = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
                   if(confirm == 'OK')
                       status = 0;
                       update(conn,'status_table',{'status'},{status});
-                      pause('on')
                   end
                else
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');  
