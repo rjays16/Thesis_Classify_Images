@@ -46,7 +46,11 @@ set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 
 x = 0;
-%% start program 
+
+try
+data = urlread('http://localhost/');
+    
+    %% start program 
 wb = waitbar(x,'Start Opening Camera');
 waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
 
@@ -97,15 +101,8 @@ while true
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                    fig = uifigure;
                    status = 1;
-                   Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                   numbers = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
-                   letters = Alphabet(numbers);
                    update(conn,'status_table',{'status'},{status});
                    imshow(picture)
-                   hold on; 
-                   rectangle('Position', [50, 60,50, 50],'EdgeColor', 'blue','LineWidth',2);
-                   title(letters,'Color','red','Position',[x y-20],'FontSize',14);
-                   hold off;
                   message = {'Warning','The Steel Truss of the Bridge buckled'};
                   confirm  = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
                   if(confirm == 'OK')
@@ -127,6 +124,10 @@ while true
               set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');  
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
+end
+catch
+    errordlg(['Error: Xampp MySQL and Apache are not running.' char(10) 'This Will Be Automatically Open xampp.'  char(10) 'Please Click Start Apache and Mysql'], 'Error');
+    system('start C:\xampp\xampp-control.exe');
 end
 
 function pushbutton4_Callback(hObject, eventdata, handles)
