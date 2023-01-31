@@ -48,9 +48,11 @@ set(handles.pushbutton2,'enable','on');
 x = 0;
 
 try
+[status_apache, result_apache] = system('systemctl is-active apache2');
+[status_mysql, result_mysql] = system('systemctl is-active mysql'); 
 data = urlread('http://localhost/');
-    
-    %% start program 
+if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
+%% start program 
 wb = waitbar(x,'Start Opening Camera');
 waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
 
@@ -79,9 +81,9 @@ myNet = trainNetwork(trainingImages, layers, opts);
 waitbar(x + 0.8, wb, 'Re training Images for classify images');
 waitbar(x + 1, wb, 'Done');
 delete(wb);
-conn = database('localhost','root','');
+conn = database('thesis','root','');
 status = 0;
-%% start looping webcam 
+%% start looping webcam
 while true
         %% automatically picture per mili-second and resize into 227    
         picture = camera.snapshot;
@@ -96,6 +98,7 @@ while true
            %% check if picture is Metal
             if predictedLabels == 'Buckle' || predictedLabels == 'NotBuckle'
               set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+              
               %% check if Metal is Buckle
                if predictedLabels == 'Buckle'
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
@@ -125,8 +128,11 @@ while true
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
 end
-catch
-    errordlg(['Error: Xampp MySQL and Apache are not running.' char(10) 'This Will Be Automatically Open xampp.'  char(10) 'Please Click Start Apache and Mysql'], 'Error');
+end
+catch ME
+    errordlg(['Error checking services: ' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
     system('start C:\xampp\xampp-control.exe');
 end
 
