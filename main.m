@@ -46,7 +46,6 @@ set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 
 x = 0;
-
 try
 [status_apache, result_apache] = system('systemctl is-active apache2');
 [status_mysql, result_mysql] = system('systemctl is-active mysql'); 
@@ -103,14 +102,15 @@ while true
                if predictedLabels == 'Buckle'
                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                    fig = uifigure;
-                   status = 1;
-                   update(conn,'status_table',{'status'},{status});
-                   imshow(picture)
+                   %% update(conn,'status_table',{'status'},{status},{'WHERE id=1'});
+                   query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+                   exec(conn, query);
                   message = {'Warning','The Steel Truss of the Bridge buckled'};
                   confirm  = uiconfirm(fig,message,'Warning', 'Icon', 'warning','CloseFcn',@(h,e) close(fig));
                   if(confirm == 'OK')
-                      status = 0;
-                      update(conn,'status_table',{'status'},{status});
+                      %% update(conn,'status_table',{'status'},{status});
+                      query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+                      exec(conn, query);
                   end
                else
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');  
@@ -127,7 +127,7 @@ while true
               set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');  
               set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
             end
-end
+end  
 end
 catch ME
     errordlg(['Error checking services: ' ME.message]);
