@@ -46,6 +46,11 @@ set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 x = 0;
 
+try 
+[status_apache, result_apache] = system('systemctl is-active apache2');
+[status_mysql, result_mysql] = system('systemctl is-active mysql'); 
+data = urlread('http://localhost/');
+if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
 %% start program 
 wb = waitbar(x,'Start Opening Camera');
 waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
@@ -249,7 +254,13 @@ while true
 
   end
 end
-
+end
+catch ME
+    errordlg(['Error checking services: ' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
+    system('start C:\xampp\xampp-control.exe');
+end
 function pushbutton4_Callback(hObject, eventdata, handles)
 
 close all; clear all; clc; delete(gcp('nocreate'));
@@ -400,7 +411,10 @@ set(handles.edit1, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit3, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit4, 'ForegroundColor', 'red', 'string', '');
-
+set(handles.editClassA, 'ForegroundColor', 'red', 'string', '');
+set(handles.editClassB, 'ForegroundColor', 'red', 'string', '');
+set(handles.editRejected, 'ForegroundColor', 'red', 'string', '');
+set(handles.editTotal, 'ForegroundColor', 'red', 'string', '');
 set(handles.pushbutton1,'enable','on');
 set(handles.pushbutton2,'enable','off');
 clear all; clc;
