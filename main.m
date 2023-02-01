@@ -133,6 +133,7 @@ while true
       if predictedLabels == 'ClassA' || predictedLabels == 'ClassB'
         set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
         set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);
+        
         %% check the color of the cavendish banana if green or not 
         diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
         diff_im = medfilt2(diff_im, [3 3]);
@@ -147,13 +148,17 @@ while true
              a = a + addClassA;
              
              %% Update banana_process set class={a} where id=1
-             update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
+             %% update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
+             query = 'UPDATE class SET A = :A WHERE id = 1';
+             data = {'A', a};
+             exec(conn, query, data);
              set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
              
               %% for Preprocessing only if status is 1 and 0
-        status = 1;
         set(handles.txtStatus, 'string', 'Processing');
-        update(conn,'status_table',{'status'},{status});
+        %% update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        exec(conn, query);
         timer = 10;
             while timer>=1
                 h = msgbox(sprintf('Please wait: %d', timer));
@@ -161,29 +166,51 @@ while true
                 n = n-1;
                 delete(h);
             end
-         status = 0;
          set(handles.txtStatus, 'string', 'Ready');
-         update(conn,'status_table',{'status'},{status});
-         
+         %% update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);
          elseif predictedLabels == 'ClassB' && ~isempty(stats)
              addClassB = 1;
              b = b + addClassB;
              
-             %% Update banana_process set class={b} where id=2
-             update(conn,'banana_process',{'class'},{b},{'WHERE id=2'});
+             %% Update banana_process set class={a} where id=1
+             %% update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
+             query = 'UPDATE class SET B = :B WHERE id = 2';
+             data = {'B', b};
+             exec(conn, query, data);
              set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+             
+              %% for Preprocessing only if status is 1 and 0
+        set(handles.txtStatus, 'string', 'Processing');
+        %% update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        exec(conn, query);
+        timer = 10;
+            while timer>=1
+                h = msgbox(sprintf('Please wait: %d', timer));
+                pause(1);
+                n = n-1;
+                delete(h);
+            end
+         set(handles.txtStatus, 'string', 'Ready');
+         %% update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);
          else
               notAccepted = 1;
              rejected = rejected + notAccepted;
              
              %% Update banana_process set class={rejected} where id=3
-             update(conn,'banana_process',{'class'},{rejected},{'WHERE id=3'});
+             query = 'UPDATE class SET Reject = :Reject WHERE id = 3';
+             data = {'Reject', rejected};
+             exec(conn, query, data);
              set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
              
               %% for Preprocessing only if status is 1 and 0
-        status = 1;
         set(handles.txtStatus, 'string', 'Processing');
-        update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        exec(conn, query);
         timer = 10;
             while timer>=1
                 h = msgbox(sprintf('Please wait: %d', timer));
@@ -191,11 +218,10 @@ while true
                 n = n-1;
                 delete(h);
             end
-         status = 0;
          set(handles.txtStatus, 'string', 'Ready');
-         update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);
          end
-         
       else
             %% for Preprocessing only if status is 1 and 0
         status = 1;
