@@ -162,7 +162,7 @@ while true
               %% for Preprocessing only if status is 1 and 0
         set(handles.txtStatus, 'string', 'Processing');
         %% update(conn,'status_table',{'status'},{status});
-        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        query = 'UPDATE status_table SET status = 1 WHERE id = 0';
         exec(conn, query);
         timer = 10;
             while timer>=1
@@ -189,7 +189,7 @@ while true
               %% for Preprocessing only if status is 1 and 0
         set(handles.txtStatus, 'string', 'Processing');
         %% update(conn,'status_table',{'status'},{status});
-        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        query = 'UPDATE status_table SET status = 2 WHERE id = 0';
         exec(conn, query);
         timer = 10;
             while timer>=1
@@ -200,7 +200,7 @@ while true
             end
          set(handles.txtStatus, 'string', 'Ready');
          %% update(conn,'status_table',{'status'},{status});
-        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        query = 'UPDATE status_table SET status = 0 WHERE id = 0';
         exec(conn, query);
          else
               notAccepted = 1;

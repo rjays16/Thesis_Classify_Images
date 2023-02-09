@@ -46,6 +46,11 @@ set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 x = 0;
 
+try 
+[status_apache, result_apache] = system('systemctl is-active apache2');
+[status_mysql, result_mysql] = system('systemctl is-active mysql'); 
+data = urlread('http://localhost/');
+if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
 %% start program 
 wb = waitbar(x,'Start Opening Camera');
 waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
@@ -171,19 +176,21 @@ while true
         query = 'UPDATE status_table SET status = 0 WHERE id = 1';
         exec(conn, query);
          elseif predictedLabels == 'ClassB' && ~isempty(stats)
-          
-         else
-              notAccepted = 1;
-             rejected = rejected + notAccepted;
+             addClassB = 1;
+             b = b + addClassB;
              
-             %% Update banana_process set class={rejected} where id=3
-             update(conn,'banana_process',{'class'},{rejected},{'WHERE id=3'});
-             set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+             %% Update banana_process set class={a} where id=1
+             %% update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
+             query = 'UPDATE class SET B = :B WHERE id = 2';
+             data = {'B', b};
+             exec(conn, query, data);
+             set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
              
               %% for Preprocessing only if status is 1 and 0
-        status = 1;
         set(handles.txtStatus, 'string', 'Processing');
-        update(conn,'status_table',{'status'},{status});
+        %% update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        exec(conn, query);
         timer = 10;
             while timer>=1
                 h = msgbox(sprintf('Please wait: %d', timer));
@@ -191,11 +198,35 @@ while true
                 n = n-1;
                 delete(h);
             end
-         status = 0;
          set(handles.txtStatus, 'string', 'Ready');
-         update(conn,'status_table',{'status'},{status});
+         %% update(conn,'status_table',{'status'},{status});
+        query = 'UPDATE status_table SET status = 0 WHERE id = 0';
+        exec(conn, query);
+         else
+              notAccepted = 1;
+             rejected = rejected + notAccepted;
+             
+             %% Update banana_process set class={rejected} where id=3
+             query = 'UPDATE class SET Reject = :Reject WHERE id = 3';
+             data = {'Reject', rejected};
+             exec(conn, query, data);
+             set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+             
+              %% for Preprocessing only if status is 1 and 0
+        set(handles.txtStatus, 'string', 'Processing');
+        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+        exec(conn, query);
+        timer = 10;
+            while timer>=1
+                h = msgbox(sprintf('Please wait: %d', timer));
+                pause(1);
+                n = n-1;
+                delete(h);
+            end
+         set(handles.txtStatus, 'string', 'Ready');
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);
          end
-         
       else
             %% for Preprocessing only if status is 1 and 0
         status = 1;
@@ -223,7 +254,13 @@ while true
 
   end
 end
-
+end
+catch ME
+    errordlg(['Error checking services: ' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
+    system('start C:\xampp\xampp-control.exe');
+end
 function pushbutton4_Callback(hObject, eventdata, handles)
 
 close all; clear all; clc; delete(gcp('nocreate'));
@@ -374,7 +411,10 @@ set(handles.edit1, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit3, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit4, 'ForegroundColor', 'red', 'string', '');
-
+set(handles.editClassA, 'ForegroundColor', 'red', 'string', '');
+set(handles.editClassB, 'ForegroundColor', 'red', 'string', '');
+set(handles.editRejected, 'ForegroundColor', 'red', 'string', '');
+set(handles.editTotal, 'ForegroundColor', 'red', 'string', '');
 set(handles.pushbutton1,'enable','on');
 set(handles.pushbutton2,'enable','off');
 clear all; clc;
