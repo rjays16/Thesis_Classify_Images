@@ -41,10 +41,66 @@ function varargout = main_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function pushbutton1_Callback(hObject, eventdata, handles) 
-global picture;
 set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 
+try
+    x = 0;
+    [status_apache, result_apache] = system('systemctl is-active apache2');
+    [status_mysql, result_mysql] = system('systemctl is-active mysql'); 
+    data = urlread('http://localhost/');
+    
+    if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
+        wb = waitbar(x,'Start Opening Camera');
+        waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
+        camera1 = webcam('USB2.0 VGA UVC WebCam');
+        camera2 = webcam('Full HD 1080P PC Camera');
+        waitbar(x + 0.4, wb, 'Classify Images...');
+        alex = alexnet;
+        layers = alex.Layers;
+        layers(23) = fullyConnectedLayer(4);
+        layers(25) = classificationLayer; 
+        allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+        [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
+        waitbar(x + 0.6, wb, 'Read Sizes of Images...');
+        opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
+        myNet = trainNetwork(trainingImages, layers, opts);
+        waitbar(x + 0.8, wb, 'Re training Images for classify images');
+        waitbar(x + 1, wb, 'Done');
+        delete(wb);
+        conn = database('thesis','root','');
+        
+        while true 
+            picture = camera1.snapshot;
+            picture = imresize(picture,[227,227]);
+            picture2 = camera2.snapshot;
+            picture2 = imresize(picture2,[227,227]);
+            testImages = picture, picture2;
+            predictedLabels = classify(myNet, testImages);
+            imshow(picture, 'Parent', handles.axes1);
+            imshow(picture2, 'Parent', handles.axes2);
+            drawnow;
+        
+            if predictedLabels == 'Bridge'
+                set(handles.editBridge, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));   
+            else  
+                set(handles.editBridge, 'ForegroundColor', 'r', 'string', 'X');   
+                set(handles.editA, 'ForegroundColor', 'r', 'string', 'X');
+                set(handles.editB, 'ForegroundColor', 'r', 'string', 'X');   
+                set(handles.editC, 'ForegroundColor', 'r', 'string', 'X');   
+                set(handles.editD, 'ForegroundColor', 'r', 'string', 'X');   
+                set(handles.editE, 'ForegroundColor', 'r', 'string', 'X');   
+                set(handles.editF, 'ForegroundColor', 'r', 'string', 'X');
+                set(handles.editG, 'ForegroundColor', 'r', 'string', 'X');   
+            end
+        end
+    end
+catch ME
+    errordlg(['Error checking services: ' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
+    system('start C:\xampp\xampp-control.exe');
+end
 function pushbutton4_Callback(hObject, eventdata, handles)
 
 close all; clear all; clc; delete(gcp('nocreate'));
@@ -184,66 +240,7 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.pushbutton1,'enable','off');
-set(handles.pushbutton2,'enable','on');
 
-try
-    x = 0;
-    [status_apache, result_apache] = system('systemctl is-active apache2');
-    [status_mysql, result_mysql] = system('systemctl is-active mysql'); 
-    data = urlread('http://localhost/');
-    
-    if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
-        wb = waitbar(x,'Start Opening Camera');
-        waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
-        camera1 = webcam('USB2.0 VGA UVC WebCam');
-        camera2 = webcam('Full HD 1080P PC Camera');
-        waitbar(x + 0.4, wb, 'Classify Images...');
-        alex = alexnet;
-        layers = alex.Layers;
-        layers(23) = fullyConnectedLayer(3);
-        layers(25) = classificationLayer; 
-        allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-        [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
-        waitbar(x + 0.6, wb, 'Read Sizes of Images...');
-        opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
-        myNet = trainNetwork(trainingImages, layers, opts);
-        waitbar(x + 0.8, wb, 'Re training Images for classify images');
-        waitbar(x + 1, wb, 'Done');
-        delete(wb);
-        conn = database('thesis','root','');
-        
-        while true 
-        picture = camera1.snapshot;
-        picture = imresize(picture,[227,227]);
-        picture2 = camera2.snapshot;
-        picture2 = imresize(picture2,[227,227]);
-        testImages = picture, picture2;
-        predictedLabels = classify(myNet, testImages);
-        imshow(camera1, 'Parent', handles.axes1);
-        imshow(camera2, 'Parent', handles.axes2);
-        drawnow;
-        
-        if predictedLabels == 'Bridge'
-            set(handles.editBridge, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));   
-        else  
-            set(handles.editBridge, 'ForegroundColor', 'g', 'string', 'X');   
-            set(handles.editA, 'ForegroundColor', 'g', 'string', 'X');
-            set(handles.editB, 'ForegroundColor', 'g', 'string', 'X');   
-            set(handles.editC, 'ForegroundColor', 'g', 'string', 'X');   
-            set(handles.editD, 'ForegroundColor', 'g', 'string', 'X');   
-            set(handles.editE, 'ForegroundColor', 'g', 'string', 'X');   
-            set(handles.editF, 'ForegroundColor', 'g', 'string', 'X');
-            set(handles.editG, 'ForegroundColor', 'g', 'string', 'X');   
-        end
-        end
-    end
-catch ME
-    errordlg(['Error checking services: ' ME.message]);
-    set(handles.pushbutton1,'enable','on');
-    set(handles.pushbutton2,'enable','off');
-    system('start C:\xampp\xampp-control.exe');
-end
 
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
@@ -714,6 +711,349 @@ function editE_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function editE_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to editE (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function editF_Callback(hObject, eventdata, handles)
+% hObject    handle to editF (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editE as text
+%        str2double(get(hObject,'String')) returns contents of editE as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editF_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editF (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit42_Callback(hObject, eventdata, handles)
+% hObject    handle to edit42 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit42 as text
+%        str2double(get(hObject,'String')) returns contents of edit42 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit42_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit42 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit43_Callback(hObject, eventdata, handles)
+% hObject    handle to edit43 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit43 as text
+%        str2double(get(hObject,'String')) returns contents of edit43 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit43_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit43 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit44_Callback(hObject, eventdata, handles)
+% hObject    handle to edit44 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit44 as text
+%        str2double(get(hObject,'String')) returns contents of edit44 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit44_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit44 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit45_Callback(hObject, eventdata, handles)
+% hObject    handle to edit45 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit45 as text
+%        str2double(get(hObject,'String')) returns contents of edit45 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit45_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit45 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit46_Callback(hObject, eventdata, handles)
+% hObject    handle to edit46 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit46 as text
+%        str2double(get(hObject,'String')) returns contents of edit46 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit46_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit46 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit47_Callback(hObject, eventdata, handles)
+% hObject    handle to edit47 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit47 as text
+%        str2double(get(hObject,'String')) returns contents of edit47 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit47_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit47 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit48_Callback(hObject, eventdata, handles)
+% hObject    handle to edit48 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit48 as text
+%        str2double(get(hObject,'String')) returns contents of edit48 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit48_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit48 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit49_Callback(hObject, eventdata, handles)
+% hObject    handle to edit49 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit49 as text
+%        str2double(get(hObject,'String')) returns contents of edit49 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit49_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit49 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit50_Callback(hObject, eventdata, handles)
+% hObject    handle to edit50 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit50 as text
+%        str2double(get(hObject,'String')) returns contents of edit50 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit50_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit50 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit51_Callback(hObject, eventdata, handles)
+% hObject    handle to edit51 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit51 as text
+%        str2double(get(hObject,'String')) returns contents of edit51 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit51_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit51 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit55_Callback(hObject, eventdata, handles)
+% hObject    handle to edit55 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit55 as text
+%        str2double(get(hObject,'String')) returns contents of edit55 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit55_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit55 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit56_Callback(hObject, eventdata, handles)
+% hObject    handle to edit56 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit56 as text
+%        str2double(get(hObject,'String')) returns contents of edit56 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit56_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit56 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit57_Callback(hObject, eventdata, handles)
+% hObject    handle to edit57 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit57 as text
+%        str2double(get(hObject,'String')) returns contents of edit57 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit57_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit57 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit58_Callback(hObject, eventdata, handles)
+% hObject    handle to edit58 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit58 as text
+%        str2double(get(hObject,'String')) returns contents of edit58 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit58_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit58 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
