@@ -1,3 +1,5 @@
+% Read an image into MATLAB
+      
 function varargout = main(varargin)
 
 
@@ -21,8 +23,6 @@ else
 end
 
 function main_OpeningFcn(hObject, eventdata, handles, varargin)
-
-
 set(gcf, 'units','normalized','outerposition',[0 0 1 1]);
 ah = axes('unit', 'normalized', 'position', [0 0 1 1]);
 bg = imread('background.png'); imagesc(bg);
@@ -32,8 +32,9 @@ set(ah,'handlevisibility','off','visible','off')
 uistack(ah, 'bottom');
 
 handles.output = hObject;
-
+      
 guidata(hObject, handles);
+
 
 
 function varargout = main_OutputFcn(hObject, eventdata, handles)
@@ -171,9 +172,12 @@ try
                    angle = theta(peaks(2, 2));
                    angle = angle * 180 / pi;
                    degrees = angle * (180/pi);
+                   degrees = floor(degrees / 1000);
+                   result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleA, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', degrees);
+                   set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', result_degree);
+                   
                 else
                    set(handles.editA, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editAngleA, 'ForegroundColor', 'g', 'string', 'X');
@@ -189,9 +193,11 @@ try
                    angle = theta(peaks(2, 2));
                    angle = angle * 180 / pi;
                    degrees = angle * (180/pi);
+                   degrees = floor(degrees / 1000);
+                   result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleB, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', degrees);
+                   set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', result_degree);
                 else
                    set(handles.editB, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editAngleB, 'ForegroundColor', 'g', 'string', 'X');
@@ -207,9 +213,11 @@ try
                    angle = theta(peaks(2, 2));
                    angle = angle * 180 / pi;
                    degrees = angle * (180/pi);
+                   degrees = floor(degrees / 1000);
+                   result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleC, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', degrees);
+                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', result_degree);
                 else
                    set(handles.editC, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editAngleC, 'ForegroundColor', 'g', 'string', 'X');
@@ -225,9 +233,11 @@ try
                    angle = theta(peaks(2, 2));
                    angle = angle * 180 / pi;
                    degrees = angle * (180/pi);
+                   degrees = floor(degrees / 1000);
+                   result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleD, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', degrees);
+                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', result_degree);
                 else
                    set(handles.editD, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editAngleD, 'ForegroundColor', 'g', 'string', 'X');
@@ -243,9 +253,11 @@ try
                    angle = theta(peaks(2, 2));
                    angle = angle * 180 / pi;
                    degrees = angle * (180/pi);
+                   degrees = floor(degrees / 1000);
+                   result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleE, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', degrees);
+                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', result_degree);
                 else
                    set(handles.editE, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editAngleE, 'ForegroundColor', 'g', 'string', 'X');
@@ -261,13 +273,23 @@ try
                    angle = theta(peaks(2, 2));
                    angle = angle * 180 / pi;
                    degrees = angle * (180/pi);
+                   degrees = floor(degrees / 1000);
+                   result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleF, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', degrees);
+                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', result_degree);
                 else
                    set(handles.editF, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editAngleF, 'ForegroundColor', 'g', 'string', 'X');
                    set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', 'X');
+                end
+                
+                if predictedLabelsA == 'Buckle' || predictedLabelsB == 'Buckle' || predictedLabelsC == 'Buckle' || predictedLabelsD == 'Buckle' || predictedLabelsE == 'Buckle' || predictedLabelsF == 'Buckle'
+                    query = 'UPDATE status_table SET status = 1 WHERE id = 0';
+                    exec(conn, query);
+                else
+                    query = 'UPDATE status_table SET status = 0 WHERE id = 0';
+                    exec(conn, query);
                 end
             else  
                 set(handles.editBridge, 'ForegroundColor', 'r', 'string', 'X');   
@@ -433,7 +455,25 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.editBridge, 'ForegroundColor', 'red', 'string', '');
-set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
+set(handles.editA, 'ForegroundColor', 'r', 'string', '');
+set(handles.editB, 'ForegroundColor', 'r', 'string', '');   
+set(handles.editC, 'ForegroundColor', 'r', 'string', '');   
+set(handles.editD, 'ForegroundColor', 'r', 'string', '');   
+set(handles.editE, 'ForegroundColor', 'r', 'string', '');   
+set(handles.editF, 'ForegroundColor', 'r', 'string', '');
+set(handles.editG, 'ForegroundColor', 'r', 'string', '');
+set(handles.editAngleA, 'ForegroundColor', 'g', 'string', '');
+set(handles.editAngleB, 'ForegroundColor', 'g', 'string', '');
+set(handles.editAngleC, 'ForegroundColor', 'g', 'string', '');
+set(handles.editAngleD, 'ForegroundColor', 'g', 'string', '');
+set(handles.editAngleE, 'ForegroundColor', 'g', 'string', '');
+set(handles.editAngleF, 'ForegroundColor', 'g', 'string', '');
+set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', '');
+set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', '');
+set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', '')
+set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', '');
+set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', '');
+set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', '');
 set(handles.pushbutton1,'enable','on');
 set(handles.pushbutton2,'enable','off');
 clear all; clc;
