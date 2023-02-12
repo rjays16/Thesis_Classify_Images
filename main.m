@@ -70,19 +70,205 @@ try
         delete(wb);
         conn = database('thesis','root','');
         
-        while true 
             picture = camera1.snapshot;
-            picture = imresize(picture,[227,227]);
+            picture_resize = imresize(picture,[227,227]);
             picture2 = camera2.snapshot;
-            picture2 = imresize(picture2,[227,227]);
-            testImages = picture, picture2;
+            picture2_resize = imresize(picture2,[227,227]);
+            testImages = picture_resize; picture2_resize;
             predictedLabels = classify(myNet, testImages);
             imshow(picture, 'Parent', handles.axes1);
             imshow(picture2, 'Parent', handles.axes2);
             drawnow;
         
             if predictedLabels == 'Bridge'
-                set(handles.editBridge, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));   
+                set(handles.editBridge, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                
+                imshow(picture, 'Parent', handles.axes1);
+                drawnow limitrate;
+                
+                A = [150 800 300 500];
+                cropped_imageA = imcrop(picture, A);
+                input_dataA = single(cropped_imageA);
+                input_dataA = (input_dataA - 128) / 128;
+                picture_resizeA = imresize(input_dataA,[227,227]);
+                predictedLabelsA = classify(myNet, picture_resizeA);
+                
+                B = [460 800 260 500];
+                cropped_imageB = imcrop(picture, B);
+                input_dataB = single(cropped_imageB);
+                input_dataB = (input_dataB - 128) / 128;
+                picture_resizeB = imresize(input_dataB,[227,227]);
+                predictedLabelsB = classify(myNet, picture_resizeB);
+                
+                C = [730 800 300 500];
+                cropped_imageC = imcrop(picture, C);
+                input_dataC = single(cropped_imageC);
+                input_dataC = (input_dataC - 128) / 128;
+                picture_resizeC = imresize(input_dataC,[227,227]);
+                predictedLabelsC = classify(myNet, picture_resizeC);
+                
+                D = [1050 800 300 500];
+                cropped_imageD = imcrop(picture, D);
+                input_dataD = single(cropped_imageD);
+                input_dataD = (input_dataD - 128) / 128;
+                picture_resizeD = imresize(input_dataD,[227,227]);
+                predictedLabelsD = classify(myNet, picture_resizeD);
+                
+                E = [1340 800 300 500];
+                cropped_imageE = imcrop(picture, E);
+                input_dataE = single(cropped_imageE);
+                input_dataE = (input_dataE - 128) / 128;
+                picture_resizeE = imresize(input_dataE,[227,227]);
+                predictedLabelsE = classify(myNet, picture_resizeE);
+                
+                F = [1650 800 350 500];
+                cropped_imageF = imcrop(picture, F);
+                input_dataF = single(cropped_imageF);
+                input_dataF = (input_dataF - 128) / 128;
+                picture_resizeF = imresize(input_dataF,[227,227]);
+                predictedLabelsF = classify(myNet, picture_resizeF);
+                
+                hold on;
+                rectangle('Position', A, 'EdgeColor', 'red');
+                text(400, 750, 'A', 'Color', 'red', 'FontSize', 20);
+                hold off;
+ 
+                hold on;
+                rectangle('Position', B, 'EdgeColor', 'b');
+                text(700, 750, 'B', 'Color', 'b', 'FontSize', 20);
+                hold off;
+ 
+                hold on;
+                rectangle('Position', C, 'EdgeColor', 'r');
+                text(1000, 750, 'C', 'Color', 'r', 'FontSize', 20);
+                hold off;
+ 
+                hold on;
+                rectangle('Position', D, 'EdgeColor', 'b');
+                text(1310, 750, 'D', 'Color', 'b', 'FontSize', 20);
+                hold off;
+ 
+                hold on;
+                rectangle('Position', E, 'EdgeColor', 'r');
+                text(1600, 750, 'E', 'Color', 'r', 'FontSize', 20);
+                hold off;
+ 
+                hold on;
+                rectangle('Position', F, 'EdgeColor', 'b');
+                text(1970, 750, 'F', 'Color', 'b', 'FontSize', 20);
+                hold off;
+                
+                
+                imshow(picture, 'Parent', handles.axes1);
+                imshow(picture2, 'Parent', handles.axes2);
+                 
+                if predictedLabelsA == 'Buckle'
+                   set(handles.editA, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   gray = rgb2gray(picture_resizeA);
+                   edges = edge(gray, 'Canny');
+                   [H, theta, rho] = hough(edges);
+                   peaks = houghpeaks(H, 5);
+                   angle = theta(peaks(2, 2));
+                   angle = angle * 180 / pi;
+                   degrees = angle * (180/pi);
+                   
+                   set(handles.editAngleA, 'ForegroundColor', 'g', 'string', angle);
+                   set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', degrees);
+                else
+                   set(handles.editA, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleA, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', 'X');
+                end
+                
+                if predictedLabelsB == 'Buckle'
+                   set(handles.editB, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   gray = rgb2gray(picture_resizeA);
+                   edges = edge(gray, 'Canny');
+                   [H, theta, rho] = hough(edges);
+                   peaks = houghpeaks(H, 5);
+                   angle = theta(peaks(2, 2));
+                   angle = angle * 180 / pi;
+                   degrees = angle * (180/pi);
+                   
+                   set(handles.editAngleB, 'ForegroundColor', 'g', 'string', angle);
+                   set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', degrees);
+                else
+                   set(handles.editB, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleB, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', 'X');
+                end
+                
+                if predictedLabelsC == 'Buckle'
+                   set(handles.editC, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   gray = rgb2gray(picture_resizeC);
+                   edges = edge(gray, 'Canny');
+                   [H, theta, rho] = hough(edges);
+                   peaks = houghpeaks(H, 5);
+                   angle = theta(peaks(2, 2));
+                   angle = angle * 180 / pi;
+                   degrees = angle * (180/pi);
+                   
+                   set(handles.editAngleC, 'ForegroundColor', 'g', 'string', angle);
+                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', degrees);
+                else
+                   set(handles.editC, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleC, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', 'X');
+                end
+                
+                if predictedLabelsD == 'Buckle'
+                   set(handles.editD, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   gray = rgb2gray(picture_resizeD);
+                   edges = edge(gray, 'Canny');
+                   [H, theta, rho] = hough(edges);
+                   peaks = houghpeaks(H, 5);
+                   angle = theta(peaks(2, 2));
+                   angle = angle * 180 / pi;
+                   degrees = angle * (180/pi);
+                   
+                   set(handles.editAngleD, 'ForegroundColor', 'g', 'string', angle);
+                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', degrees);
+                else
+                   set(handles.editD, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleD, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', 'X');
+                end
+                
+                if predictedLabelsE == 'Buckle'
+                   set(handles.editE, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   gray = rgb2gray(picture_resizeE);
+                   edges = edge(gray, 'Canny');
+                   [H, theta, rho] = hough(edges);
+                   peaks = houghpeaks(H, 5);
+                   angle = theta(peaks(2, 2));
+                   angle = angle * 180 / pi;
+                   degrees = angle * (180/pi);
+                   
+                   set(handles.editAngleE, 'ForegroundColor', 'g', 'string', angle);
+                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', degrees);
+                else
+                   set(handles.editE, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleE, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', 'X');
+                end
+                
+                if predictedLabelsF == 'Buckle'
+                   set(handles.editF, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                   gray = rgb2gray(picture_resizeF);
+                   edges = edge(gray, 'Canny');
+                   [H, theta, rho] = hough(edges);
+                   peaks = houghpeaks(H, 5);
+                   angle = theta(peaks(2, 2));
+                   angle = angle * 180 / pi;
+                   degrees = angle * (180/pi);
+                   
+                   set(handles.editAngleF, 'ForegroundColor', 'g', 'string', angle);
+                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', degrees);
+                else
+                   set(handles.editF, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleF, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', 'X');
+                end
             else  
                 set(handles.editBridge, 'ForegroundColor', 'r', 'string', 'X');   
                 set(handles.editA, 'ForegroundColor', 'r', 'string', 'X');
@@ -93,7 +279,6 @@ try
                 set(handles.editF, 'ForegroundColor', 'r', 'string', 'X');
                 set(handles.editG, 'ForegroundColor', 'r', 'string', 'X');   
             end
-        end
     end
 catch ME
     errordlg(['Error checking services: ' ME.message]);
@@ -743,18 +928,18 @@ end
 
 
 
-function edit42_Callback(hObject, eventdata, handles)
-% hObject    handle to edit42 (see GCBO)
+function editAngleA_Callback(hObject, eventdata, handles)
+% hObject    handle to editAngleA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit42 as text
-%        str2double(get(hObject,'String')) returns contents of edit42 as a double
+% Hints: get(hObject,'String') returns contents of editAngleA as text
+%        str2double(get(hObject,'String')) returns contents of editAngleA as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit42_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit42 (see GCBO)
+function editAngleA_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAngleA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -766,18 +951,18 @@ end
 
 
 
-function edit43_Callback(hObject, eventdata, handles)
-% hObject    handle to edit43 (see GCBO)
+function editDegreeA_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit43 as text
-%        str2double(get(hObject,'String')) returns contents of edit43 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeA as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeA as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit43_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit43 (see GCBO)
+function editDegreeA_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeA (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -789,18 +974,18 @@ end
 
 
 
-function edit44_Callback(hObject, eventdata, handles)
-% hObject    handle to edit44 (see GCBO)
+function editAngleB_Callback(hObject, eventdata, handles)
+% hObject    handle to editAngleB (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit44 as text
-%        str2double(get(hObject,'String')) returns contents of edit44 as a double
+% Hints: get(hObject,'String') returns contents of editAngleB as text
+%        str2double(get(hObject,'String')) returns contents of editAngleB as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit44_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit44 (see GCBO)
+function editAngleB_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAngleB (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -812,18 +997,18 @@ end
 
 
 
-function edit45_Callback(hObject, eventdata, handles)
-% hObject    handle to edit45 (see GCBO)
+function editDegreeB_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeB (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit45 as text
-%        str2double(get(hObject,'String')) returns contents of edit45 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeB as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeB as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit45_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit45 (see GCBO)
+function editDegreeB_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeB (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -858,18 +1043,18 @@ end
 
 
 
-function edit47_Callback(hObject, eventdata, handles)
-% hObject    handle to edit47 (see GCBO)
+function editDegreeC_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeC (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit47 as text
-%        str2double(get(hObject,'String')) returns contents of edit47 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeC as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeC as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit47_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit47 (see GCBO)
+function editDegreeC_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeC (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -881,18 +1066,18 @@ end
 
 
 
-function edit48_Callback(hObject, eventdata, handles)
-% hObject    handle to edit48 (see GCBO)
+function editAngleD_Callback(hObject, eventdata, handles)
+% hObject    handle to editAngleD (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit48 as text
-%        str2double(get(hObject,'String')) returns contents of edit48 as a double
+% Hints: get(hObject,'String') returns contents of editAngleD as text
+%        str2double(get(hObject,'String')) returns contents of editAngleD as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit48_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit48 (see GCBO)
+function editAngleD_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAngleD (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -904,18 +1089,18 @@ end
 
 
 
-function edit49_Callback(hObject, eventdata, handles)
-% hObject    handle to edit49 (see GCBO)
+function editDegreeD_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeD (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit49 as text
-%        str2double(get(hObject,'String')) returns contents of edit49 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeD as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeD as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit49_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit49 (see GCBO)
+function editDegreeD_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeD (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -927,18 +1112,18 @@ end
 
 
 
-function edit50_Callback(hObject, eventdata, handles)
-% hObject    handle to edit50 (see GCBO)
+function editAngleE_Callback(hObject, eventdata, handles)
+% hObject    handle to editAngleE (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit50 as text
-%        str2double(get(hObject,'String')) returns contents of edit50 as a double
+% Hints: get(hObject,'String') returns contents of editAngleE as text
+%        str2double(get(hObject,'String')) returns contents of editAngleE as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit50_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit50 (see GCBO)
+function editAngleE_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAngleE (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -950,18 +1135,18 @@ end
 
 
 
-function edit51_Callback(hObject, eventdata, handles)
-% hObject    handle to edit51 (see GCBO)
+function editDegreeE_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeE (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit51 as text
-%        str2double(get(hObject,'String')) returns contents of edit51 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeE as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeE as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit51_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit51 (see GCBO)
+function editDegreeE_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeE (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -973,18 +1158,18 @@ end
 
 
 
-function edit55_Callback(hObject, eventdata, handles)
-% hObject    handle to edit55 (see GCBO)
+function editAngleF_Callback(hObject, eventdata, handles)
+% hObject    handle to editAngleF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit55 as text
-%        str2double(get(hObject,'String')) returns contents of edit55 as a double
+% Hints: get(hObject,'String') returns contents of editAngleF as text
+%        str2double(get(hObject,'String')) returns contents of editAngleF as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit55_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit55 (see GCBO)
+function editAngleF_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAngleF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -996,18 +1181,18 @@ end
 
 
 
-function edit56_Callback(hObject, eventdata, handles)
-% hObject    handle to edit56 (see GCBO)
+function editDegreeF_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit56 as text
-%        str2double(get(hObject,'String')) returns contents of edit56 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeF as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeF as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit56_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit56 (see GCBO)
+function editDegreeF_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1019,18 +1204,18 @@ end
 
 
 
-function edit57_Callback(hObject, eventdata, handles)
-% hObject    handle to edit57 (see GCBO)
+function editAngleG_Callback(hObject, eventdata, handles)
+% hObject    handle to editAngleG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit57 as text
-%        str2double(get(hObject,'String')) returns contents of edit57 as a double
+% Hints: get(hObject,'String') returns contents of editAngleG as text
+%        str2double(get(hObject,'String')) returns contents of editAngleG as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit57_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit57 (see GCBO)
+function editAngleG_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAngleG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1042,18 +1227,18 @@ end
 
 
 
-function edit58_Callback(hObject, eventdata, handles)
-% hObject    handle to edit58 (see GCBO)
+function editDegreeG_Callback(hObject, eventdata, handles)
+% hObject    handle to editDegreeG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit58 as text
-%        str2double(get(hObject,'String')) returns contents of edit58 as a double
+% Hints: get(hObject,'String') returns contents of editDegreeG as text
+%        str2double(get(hObject,'String')) returns contents of editDegreeG as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit58_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit58 (see GCBO)
+function editDegreeG_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDegreeG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
