@@ -224,7 +224,7 @@ while true
                 delete(h);
             end
          set(handles.txtStatus, 'string', 'Ready');
-        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        query = 'UPDATE status_table SET status = 3 WHERE id = 1';
         exec(conn, query);
          end
       else
