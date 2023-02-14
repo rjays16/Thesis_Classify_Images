@@ -219,9 +219,9 @@ try
                    set(handles.editAngleC, 'ForegroundColor', 'g', 'string', angle);
                    set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', result_degree);
                 else
-                   set(handles.editC, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editAngleC, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editDegreeC, 'ForegroundColor', 'r', 'string', 'X');
+                   set(handles.editC, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleC, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', 'X');
                 end
                 
                 if predictedLabelsD == 'Buckle'
@@ -239,9 +239,9 @@ try
                    set(handles.editAngleD, 'ForegroundColor', 'g', 'string', angle);
                    set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', result_degree);
                 else
-                   set(handles.editD, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editAngleD, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editDegreeD, 'ForegroundColor', 'r', 'string', 'X');
+                   set(handles.editD, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleD, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', 'X');
                 end
                 
                 if predictedLabelsE == 'Buckle'
@@ -259,9 +259,9 @@ try
                    set(handles.editAngleE, 'ForegroundColor', 'g', 'string', angle);
                    set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', result_degree);
                 else
-                   set(handles.editE, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editAngleE, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editDegreeE, 'ForegroundColor', 'r', 'string', 'X');
+                   set(handles.editE, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleE, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', 'X');
                 end
                 
                 if predictedLabelsF == 'Buckle'
@@ -279,9 +279,9 @@ try
                    set(handles.editAngleF, 'ForegroundColor', 'g', 'string', angle);
                    set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', result_degree);
                 else
-                   set(handles.editF, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editAngleF, 'ForegroundColor', 'r', 'string', 'X');
-                   set(handles.editDegreeF, 'ForegroundColor', 'r', 'string', 'X');
+                   set(handles.editF, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editAngleF, 'ForegroundColor', 'g', 'string', 'X');
+                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', 'X');
                 end
                 
                 if predictedLabelsA == 'Buckle' || predictedLabelsB == 'Buckle' || predictedLabelsC == 'Buckle' || predictedLabelsD == 'Buckle' || predictedLabelsE == 'Buckle' || predictedLabelsF == 'Buckle'
