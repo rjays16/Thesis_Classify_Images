@@ -176,7 +176,7 @@ try
                    result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleA, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', result_degree);
+                   set(handles.editDegreeA, 'ForegroundColor', 'g', 'string', [num2str(result_degree), char(176)]);
                    
                 else
                    set(handles.editA, 'ForegroundColor', 'r', 'string', 'X');
@@ -197,7 +197,7 @@ try
                    result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleB, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', result_degree);
+                   set(handles.editDegreeB, 'ForegroundColor', 'g', 'string', [num2str(result_degree), char(176)]);
                 else
                    set(handles.editB, 'ForegroundColor', 'r', 'string', 'X');
                    set(handles.editAngleB, 'ForegroundColor', 'r', 'string', 'X');
@@ -217,7 +217,7 @@ try
                    result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleC, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', result_degree);
+                   set(handles.editDegreeC, 'ForegroundColor', 'g', 'string', [num2str(result_degree), char(176)]);
                 else
                    set(handles.editC, 'ForegroundColor', 'r', 'string', 'X');
                    set(handles.editAngleC, 'ForegroundColor', 'r', 'string', 'X');
@@ -237,7 +237,7 @@ try
                    result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleD, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', result_degree);
+                   set(handles.editDegreeD, 'ForegroundColor', 'g', 'string', [num2str(result_degree), char(176)]);
                 else
                    set(handles.editD, 'ForegroundColor', 'r', 'string', 'X');
                    set(handles.editAngleD, 'ForegroundColor', 'r', 'string', 'X');
@@ -257,7 +257,7 @@ try
                    result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleE, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', result_degree);
+                   set(handles.editDegreeE, 'ForegroundColor', 'g', 'string', [num2str(result_degree), char(176)]);
                 else
                    set(handles.editE, 'ForegroundColor', 'r', 'string', 'X');
                    set(handles.editAngleE, 'ForegroundColor', 'r', 'string', 'X');
@@ -277,7 +277,7 @@ try
                    result_degree = mod(degrees, 1000);
                    
                    set(handles.editAngleF, 'ForegroundColor', 'g', 'string', angle);
-                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', result_degree);
+                   set(handles.editDegreeF, 'ForegroundColor', 'g', 'string', [num2str(result_degree), char(176)]);
                 else
                    set(handles.editF, 'ForegroundColor', 'r', 'string', 'X');
                    set(handles.editAngleF, 'ForegroundColor', 'r', 'string', 'X');
