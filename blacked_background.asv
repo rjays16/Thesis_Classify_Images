@@ -1,24 +1,29 @@
 function [Aseg1] = blacked_background(img)
-    
+  
     Agray = colouredToGray_mex(img);
-    imageSize = size(img);
-    numRows = imageSize(1);
+     imageSize = size(img);
+     numRows = imageSize(1);
     numCols = imageSize(2);
+
+
     wavelengthMin = 4/sqrt(2);
     wavelengthMax = hypot(numRows,numCols);
     n = floor(log2(wavelengthMax/wavelengthMin));
     wavelength = 2.^(0:(n-2)) * wavelengthMin;
+
     deltaTheta = 45;
     orientation = 0:deltaTheta:(180-deltaTheta);
+
+    % gabor draw the limit removing background
     g = gabor(wavelength,orientation);
+    %1 1
     gabormag = imgaborfilt(Agray,g);
-    
+    %2
     for i = 1:length(g)
     sigma = 0.5*g(i).Wavelength;
     K = 3;
     gabormag(:,:,i) = imgaussfilt(gabormag(:,:,i),K*sigma); 
     end
-    
     X = 1:numCols;
     Y = 1:numRows;
     [X,Y] = meshgrid(X,Y);

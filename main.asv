@@ -190,13 +190,11 @@ while true
              end
              drawnow limitrate;
              
-             %% if ~isempty(numBlobs) && numBlobs > 5
-             if ~isempty(numBlobs)
-                set(handles.editspot, 'ForegroundColor', 'r', 'string',numBlobs);
+             if ~isempty(numBlobs) && numBlobs > 5
+                set(handles.edit5, 'ForegroundColor', 'r', 'string',numBlobs);
              else
-                set(handles.editspot, 'ForegroundColor', 'green', 'string', '- NONE');
+                set(handles.edit5, 'ForegroundColor', 'green', 'string', '- NONE');
              end
-             
         %% update(conn,'status_table',{'status'},{status});
         query = 'UPDATE status_table SET status = 1 WHERE id = 0';
         exec(conn, query);
@@ -223,40 +221,7 @@ while true
              set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
              
               %% for Preprocessing only if status is 1 and 0
-             set(handles.txtStatus, 'string', 'Processing');
-             
-             set_for_spot = blacked_background(picture2);
-             imshow(set_for_spot);
-             drawnow limitrate;
-             
-             grayImage = set_for_spot;
-             [rows, columns, numberOfColorChannels] = size(grayImage);
-             if numberOfColorChannels > 1
-                grayImage = rgb2gray(grayImage);
-             end
-                
-             binaryImage = grayImage == 0;
-             binaryImage = imclearborder(binaryImage);
-             [labeledImage, numBlobs] = bwlabel(binaryImage);
-             coloredLabels = label2rgb (labeledImage, 'hsv', 'k', 'shuffle');
-             props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
-
-             imshow(picture2);
-             
-             hold on;
-             for k = 1 : numBlobs
-                bb = props(k).BoundingBox;
-                bc = props(k).Centroid;
-                rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
-             end
-             drawnow limitrate;
-             
-             %% if ~isempty(numBlobs) && numBlobs > 5
-             if ~isempty(numBlobs)
-                set(handles.editspot, 'ForegroundColor', 'r', 'string',numBlobs);
-             else
-                set(handles.editspot, 'ForegroundColor', 'green', 'string', '- NONE');
-             end
+        set(handles.txtStatus, 'string', 'Processing');
         %% update(conn,'status_table',{'status'},{status});
         query = 'UPDATE status_table SET status = 2 WHERE id = 0';
         exec(conn, query);
