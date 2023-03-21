@@ -45,30 +45,30 @@ set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 x = 0;
 
-try 
-[status_apache, result_apache] = system('systemctl is-active apache2');
-[status_mysql, result_mysql] = system('systemctl is-active mysql'); 
-data = urlread('http://localhost/');
-if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
+
+%%[status_apache, result_apache] = system('systemctl is-active apache2');
+%%[status_mysql, result_mysql] = system('systemctl is-active mysql'); 
+%%data = urlread('http://localhost/');
+%%if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data)
 %% start program 
 wb = waitbar(x,'Start Opening Camera');
 waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
 
 %% callling function webcam
-camera = webcam();
-camera2 = webcam('name_of_camera_model');
+%% camera = webcam();
+%% camera2 = webcam('name_of_camera_model');
 waitbar(x + 0.4, wb, 'Classify Images...');
 
-%% calling deep learning model tool alexnet
+
 alex = alexnet;
 layers = alex.Layers;
 
-%% size of layers on alexnet 
-layers(23) = fullyConnectedLayer(4);
+
+layers(23) = fullyConnectedLayer(3);
 layers(25) = classificationLayer;
 
 
-%% images to compare 
+
 allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
 [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
 
@@ -82,254 +82,283 @@ waitbar(x + 1, wb, 'Done');
 delete(wb);
 
  %% setup db connection 
-conn = database('thesis','root','');
+conn = database('localhost','root','');
 nnet = alexnet;
-status = 0;
-        
-%% start looping webcam 
-while true
-    %% capture and resizing into 227 video image
-    picture = camera.snapshot;
-    picture2 = camera2.snapshot;
+status = 0;  
+
+
+   %% picture = camera.snapshot;
+   %% picture = imread("Class_B.jpg");
+    %% picture2 = camera2.snapshot;
     picture = imresize(picture,[227,227]);
-    picture2 = imresize(picture2,[227,227]);
-        image(picture, picture2);
+       image(picture);
         drawnow;
         
-        %% Selecting stats if the banana is class a
+
         data_ClassA = exec(conn,'SELECT total FROM banana_process WHERE id = 1');
         data_ClassA = fetch(data_ClassA);
         
-        %% Selecting stats if the banana is class b
+
         data_ClassB = exec(conn,'SELECT total FROM banana_process WHERE id = 2');
         data_ClassB = fetch(data_ClassB);
         
-        %% Selecting stats if the banana is class rejected
+
         data_Rejected = exec(conn,'SELECT total FROM banana_process WHERE id = 3');
         data_Rejected = fetch(data_Rejected);
         
-        %% assigning stats for class a
         a = data_ClassA.Data;
         ClassA_Interger = a{1};
         set(handles.editClassA, 'string', a);
 
-        %% assigning stats for class b
+
         b = data_ClassB.Data; 
         ClassB_Interger = b{1};
         set(handles.editClassB, 'string', b);
 
-        %% assigning stats for rejected
+
         rejected = data_Rejected.Data;
         rejected_Integer = rejected{1};
         set(handles.editRejected, 'string', rejected);
         
-        %% overall total test for banana process
-        total = ClassA_Interger + ClassB_Interger + rejected_Integer;
+
+        total = rejected_Integer;
         set(handles.editTotal, 'string', total);
 
-        %% compare video image into default neural network
+
         label = classify(nnet, picture);
   
-        %% check condition if the object is banana
+      
         if label == 'banana'
       set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));  
-      %% train images convolutional neural network for classify banana variety 
-      predictedLabels = classify(myNet, testImages);
+
+      predictedLabels = classify(myNet, picture);
       
-      %% check if the banana is Cavendish 
-      if predictedLabels == 'ClassA' || predictedLabels == 'ClassB'
-        set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-        set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);
         
-        %% check the color of the cavendish banana if green or not 
-        diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
-        diff_im = medfilt2(diff_im, [3 3]);
-        diff_im = imbinarize(diff_im,0.18);
-        diff_im = bwareaopen(diff_im,300);
-        bw = bwlabel(diff_im, 8);
-        stats = regionprops(bw, 'BoundingBox', 'Centroid');
-        
-        %% check the image of what class of the the cavendish (If the banana is cavendish)
-         if predictedLabels == 'ClassA' && ~isempty(stats)
+       
+         if predictedLabels == 'ClassA'
+          set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+             set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);    
              addClassA = 1;
-             a = a + addClassA;
+             ClassA_Interger = ClassA_Interger + addClassA;
+             ClassA_string = num2str(ClassA_Interger);
              
-             %% Update banana_process set class={a} where id=1
-             %% update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
-             query = 'UPDATE class SET A = :A WHERE id = 1';
-             data = {'A', a};
-             exec(conn, query, data);
-             set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+             diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
+             diff_im = medfilt2(diff_im, [3 3]);
+             diff_im = imbinarize(diff_im,0.18);
+             diff_im = bwareaopen(diff_im,300);
+             bw = bwlabel(diff_im, 8);
+             stats = regionprops(bw, 'BoundingBox', 'Centroid');
              
-              %% for Preprocessing only if status is 1 and 0
-             set(handles.txtStatus, 'string', 'Processing');
-             
-             set_for_spot = blacked_background(picture2);
+            if ~isempty(stats)
+                set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+            else
+                set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
+            end
+        
+             set_for_spot = blacked_background(picture);
              imshow(set_for_spot);
              drawnow limitrate;
              
              grayImage = set_for_spot;
              [rows, columns, numberOfColorChannels] = size(grayImage);
              if numberOfColorChannels > 1
-                grayImage = rgb2gray(grayImage);
-             end
+                 grayImage = rgb2gray(grayImage);
+              end
                 
              binaryImage = grayImage == 0;
              binaryImage = imclearborder(binaryImage);
              [labeledImage, numBlobs] = bwlabel(binaryImage);
              coloredLabels = label2rgb (labeledImage, 'hsv', 'k', 'shuffle');
-             props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
+              props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
 
-             imshow(picture2);
+              imshow(picture);
              
-             hold on;
-             for k = 1 : numBlobs
-                bb = props(k).BoundingBox;
-                bc = props(k).Centroid;
-                rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
-             end
-             drawnow limitrate;
+              hold on;
+              for k = 1 : numBlobs
+                 bb = props(k).BoundingBox;
+                 bc = props(k).Centroid;
+                 rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
+              end
+              drawnow limitrate;
              
-             %% if ~isempty(numBlobs) && numBlobs > 5
-             if ~isempty(numBlobs)
-                set(handles.editspot, 'ForegroundColor', 'r', 'string',numBlobs);
-             else
-                set(handles.editspot, 'ForegroundColor', 'green', 'string', '- NONE');
-             end
+              if isempty(numBlobs)
+                 set(handles.txtStatus, 'string', 'Processing');
+                 set(handles.edit5, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                 if ~isempty(stats)
+                   query = ['UPDATE banana_process SET total = ', ClassA_string, ' WHERE id = 1'];
+                   exec(conn, query);
+                   
+                    query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
+                    exec(conn, query_status_table);
+                   timer = 5;
+                   h = msgbox(sprintf('Please wait: %d', timer));
+                    pause(timer);
+                    delete(h);
+                    set(handles.txtStatus, 'string', 'Ready');
+                     query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
+                    exec(conn, query_status_table);
+                 end
+              else
+                  
+              set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+              set(handles.txtStatus, 'string', 'Processing');
+              notAccepted = 1;
+              rejected_Integer = rejected_Integer + notAccepted;
+              reject_string = num2str(rejected_Integer);
              
-        %% update(conn,'status_table',{'status'},{status});
+              query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
+              exec(conn, query);
+              
+               query = 'UPDATE status_table SET status = 1 WHERE id = 0';
+               exec(conn, query);
+                timer = 5;
+                h = msgbox(sprintf('Please wait: %d', timer));
+                pause(timer);
+                delete(h);
+                set(handles.txtStatus, 'string', 'Ready');
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);   
+              end
+             
         query = 'UPDATE status_table SET status = 1 WHERE id = 0';
         exec(conn, query);
-        timer = 10;
-            while timer>=1
-                h = msgbox(sprintf('Please wait: %d', timer));
-                pause(1);
-                n = n-1;
-                delete(h);
-            end
+            timer = 5;
+            h = msgbox(sprintf('Please wait: %d', timer));
+            pause(timer);
+            delete(h);
          set(handles.txtStatus, 'string', 'Ready');
-         %% update(conn,'status_table',{'status'},{status});
         query = 'UPDATE status_table SET status = 0 WHERE id = 1';
-        exec(conn, query);
-         elseif predictedLabels == 'ClassB' && ~isempty(stats)
+        exec(conn, query);   
+        
+         elseif predictedLabels == 'ClassB'
+         
+             set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+             set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);    
              addClassB = 1;
-             b = b + addClassB;
+             ClassB_Interger = ClassB_Interger + addClassB;
+             ClassB_string = num2str(ClassB_Interger);
              
-             %% Update banana_process set class={a} where id=1
-             %% update(conn,'banana_process',{'class'},{a},{'WHERE id=1'});
-             query = 'UPDATE class SET B = :B WHERE id = 2';
-             data = {'B', b};
-             exec(conn, query, data);
-             set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+             diff_im = imsubtract(picture(:,:,2), rgb2gray(picture)); 
+             diff_im = medfilt2(diff_im, [3 3]);
+             diff_im = imbinarize(diff_im,0.18);
+             diff_im = bwareaopen(diff_im,300);
+             bw = bwlabel(diff_im, 8);
+             stats = regionprops(bw, 'BoundingBox', 'Centroid');
              
-              %% for Preprocessing only if status is 1 and 0
-             set(handles.txtStatus, 'string', 'Processing');
-             
-             set_for_spot = blacked_background(picture2);
+            if ~isempty(stats)
+                set(handles.edit4, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+            else
+                set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
+            end
+        
+             set_for_spot = blacked_background(picture);
              imshow(set_for_spot);
              drawnow limitrate;
              
              grayImage = set_for_spot;
              [rows, columns, numberOfColorChannels] = size(grayImage);
              if numberOfColorChannels > 1
-                grayImage = rgb2gray(grayImage);
-             end
+                 grayImage = rgb2gray(grayImage);
+              end
                 
              binaryImage = grayImage == 0;
              binaryImage = imclearborder(binaryImage);
              [labeledImage, numBlobs] = bwlabel(binaryImage);
              coloredLabels = label2rgb (labeledImage, 'hsv', 'k', 'shuffle');
-             props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
+              props = regionprops(labeledImage, 'BoundingBox', 'Centroid');
 
-             imshow(picture2);
+              imshow(picture);
              
-             hold on;
-             for k = 1 : numBlobs
-                bb = props(k).BoundingBox;
-                bc = props(k).Centroid;
-                rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
-             end
-             drawnow limitrate;
+              hold on;
+              for k = 1 : numBlobs
+                 bb = props(k).BoundingBox;
+                 bc = props(k).Centroid;
+                 rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
+              end
+              drawnow limitrate;
              
-             %% if ~isempty(numBlobs) && numBlobs > 5
-             if ~isempty(numBlobs)
-                set(handles.editspot, 'ForegroundColor', 'r', 'string',numBlobs);
-             else
-                set(handles.editspot, 'ForegroundColor', 'green', 'string', '- NONE');
-             end
-        %% update(conn,'status_table',{'status'},{status});
-        query = 'UPDATE status_table SET status = 2 WHERE id = 0';
-        exec(conn, query);
-        timer = 10;
-            while timer>=1
-                h = msgbox(sprintf('Please wait: %d', timer));
-                pause(1);
-                n = n-1;
-                delete(h);
-            end
-         set(handles.txtStatus, 'string', 'Ready');
-         %% update(conn,'status_table',{'status'},{status});
-        query = 'UPDATE status_table SET status = 0 WHERE id = 0';
-        exec(conn, query);
-         else
+              if isempty(numBlobs)
+                 set(handles.txtStatus, 'string', 'Processing');
+                 set(handles.edit5, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                 if ~isempty(stats)
+                   query = ['UPDATE banana_process SET total = ', ClassB_string, ' WHERE id = 2'];
+                   exec(conn, query);
+                   
+                    query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
+                    exec(conn, query_status_table);
+                   timer = 5;
+                   h = msgbox(sprintf('Please wait: %d', timer));
+                    pause(timer);
+                    delete(h);
+                    set(handles.txtStatus, 'string', 'Ready');
+                     query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
+                    exec(conn, query_status_table);
+                 end
+              else
+                  
+              set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+              set(handles.txtStatus, 'string', 'Processing');
               notAccepted = 1;
-             rejected = rejected + notAccepted;
+              rejected_Integer = rejected_Integer + notAccepted;
+              reject_string = num2str(rejected_Integer);
              
-             %% Update banana_process set class={rejected} where id=3
-             query = 'UPDATE class SET Reject = :Reject WHERE id = 3';
-             data = {'Reject', rejected};
-             exec(conn, query, data);
-             set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-             
-              %% for Preprocessing only if status is 1 and 0
-        set(handles.txtStatus, 'string', 'Processing');
-        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
-        exec(conn, query);
-        timer = 10;
-            while timer>=1
+              query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
+              exec(conn, query);
+              
+               query = 'UPDATE status_table SET status = 1 WHERE id = 0';
+               exec(conn, query);
+                timer = 5;
                 h = msgbox(sprintf('Please wait: %d', timer));
-                pause(1);
-                n = n-1;
+                pause(timer);
                 delete(h);
-            end
-         set(handles.txtStatus, 'string', 'Ready');
-        query = 'UPDATE status_table SET status = 3 WHERE id = 1';
+                set(handles.txtStatus, 'string', 'Ready');
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);   
+              end
+             
+        query = 'UPDATE status_table SET status = 1 WHERE id = 0';
         exec(conn, query);
+            timer = 5;
+            h = msgbox(sprintf('Please wait: %d', timer));
+            pause(timer);
+            delete(h);
+         set(handles.txtStatus, 'string', 'Ready');
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);   
+         else
+             set(handles.txtStatus, 'string', 'Processing');
+             query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+             exec(conn, query);
+             notAccepted = 1;
+              rejected_Integer = rejected_Integer + notAccepted;
+              reject_string = num2str(rejected_Integer);
+             
+              query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
+              exec(conn, query);
+              
+            set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
+            set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+            set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
+            set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+            
+            query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+            exec(conn, query);
+            timer = 5;
+            h = msgbox(sprintf('Please wait: %d', timer));
+            pause(timer);
+            delete(h);
+            set(handles.txtStatus, 'string', 'Ready');
          end
-      else
-            %% for Preprocessing only if status is 1 and 0
-        status = 1;
-        set(handles.txtStatus, 'string', 'Processing');
-        update(conn,'status_table',{'status'},{status});
-        timer = 10;
-            while timer>=1
-                h = msgbox(sprintf('Please wait: %d', timer));
-                pause(1);
-                n = n-1;
-                delete(h);
-            end
-         status = 0;
-         set(handles.txtStatus, 'string', 'Ready');
-         update(conn,'status_table',{'status'},{status});
-         
-        set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
-        set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-      end
-  else
+        else
       set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
       set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
+      set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+        end
 
-  end
-end
-end
-catch ME
-    errordlg(['Error checking services: ' ME.message]);
-    set(handles.pushbutton1,'enable','on');
-    set(handles.pushbutton2,'enable','off');
-    system('start C:\xampp8.2.0\xampp-control.exe');
-end
+
+
 function pushbutton4_Callback(hObject, eventdata, handles)
 
 close all; clear all; clc; delete(gcp('nocreate'));
@@ -774,17 +803,40 @@ end
 
 
 function editspot_Callback(hObject, eventdata, handles)
-% hObject    handle to editspot (see GCBO)
+% hObject    handle to edit5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of editspot as text
-%        str2double(get(hObject,'String')) returns contents of editspot as a double
+% Hints: get(hObject,'String') returns contents of edit5 as text
+%        str2double(get(hObject,'String')) returns contents of edit5 as a double
 
 
 % --- Executes during object creation, after setting all properties.
 function editspot_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editspot (see GCBO)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function editSpot_Callback(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit5 as text
+%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editSpot_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
