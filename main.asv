@@ -232,86 +232,87 @@ data = urlread('http://localhost/');
                     bb = props(k).BoundingBox;
                     bc = props(k).Centroid;
                     rectangle('Position',bb,'EdgeColor','c','LineWidth',2);
-                end
-                
-                drawnow limitrate;
+              end
+              drawnow limitrate;
              
-                if isempty(numBlobs)
-                    set(handles.txtStatus, 'string', 'Processing');
-                    set(handles.edit5, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                    
-                    if ~isempty(stats)
-                        query = ['UPDATE banana_process SET total = ', ClassB_string, ' WHERE id = 2'];
-                        exec(conn, query);
-                        query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                        exec(conn, query_status_table);
-                        timer = 5;
-                        h = msgbox(sprintf('Please wait: %d', timer));
-                        pause(timer);
-                        delete(h);
-                        set(handles.txtStatus, 'string', 'Ready');
-                        query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                        exec(conn, query_status_table);
-                    end
-                else
-                  
-                    set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
-                    set(handles.txtStatus, 'string', 'Processing');
-                    notAccepted = 1;
-                    rejected_Integer = rejected_Integer + notAccepted;
-                    reject_string = num2str(rejected_Integer);
-                    query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
-                    exec(conn, query);
-                    query = 'UPDATE status_table SET status = 1 WHERE id = 0';
-                    exec(conn, query);
-                    timer = 5;
-                    h = msgbox(sprintf('Please wait: %d', timer));
+              if isempty(numBlobs)
+                 set(handles.txtStatus, 'string', 'Processing');
+                 set(handles.edit5, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
+                 if ~isempty(stats)
+                   query = ['UPDATE banana_process SET total = ', ClassB_string, ' WHERE id = 2'];
+                   exec(conn, query);
+                   
+                    query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
+                    exec(conn, query_status_table);
+                   timer = 5;
+                   h = msgbox(sprintf('Please wait: %d', timer));
                     pause(timer);
                     delete(h);
                     set(handles.txtStatus, 'string', 'Ready');
-                    query = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                    exec(conn, query);   
-                end
+                     query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
+                    exec(conn, query_status_table);
+                 end
+              else
+                  
+              set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+              set(handles.txtStatus, 'string', 'Processing');
+              notAccepted = 1;
+              rejected_Integer = rejected_Integer + notAccepted;
+              reject_string = num2str(rejected_Integer);
              
-                query = 'UPDATE status_table SET status = 1 WHERE id = 0';
-                exec(conn, query);
+              query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
+              exec(conn, query);
+              
+               query = 'UPDATE status_table SET status = 1 WHERE id = 0';
+               exec(conn, query);
                 timer = 5;
                 h = msgbox(sprintf('Please wait: %d', timer));
                 pause(timer);
                 delete(h);
                 set(handles.txtStatus, 'string', 'Ready');
-                query = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                exec(conn, query);   
-                
-                else
-                    
-                    set(handles.txtStatus, 'string', 'Processing');
-                    query = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                    exec(conn, query);
-                    notAccepted = 1;
-                    rejected_Integer = rejected_Integer + notAccepted;
-                    reject_string = num2str(rejected_Integer);
-                    query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
-                    exec(conn, query);
-                    set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
-                    set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-                    set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
-                    set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
-                    query = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                    exec(conn, query);
-                    timer = 5;
-                    h = msgbox(sprintf('Please wait: %d', timer));
-                    pause(timer);
-                    delete(h);
-                    set(handles.txtStatus, 'string', 'Ready');
-                end
-            else
-                
-                set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');
-                set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
-                set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-                set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
-                set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);   
+              end
+             
+        query = 'UPDATE status_table SET status = 1 WHERE id = 0';
+        exec(conn, query);
+            timer = 5;
+            h = msgbox(sprintf('Please wait: %d', timer));
+            pause(timer);
+            delete(h);
+         set(handles.txtStatus, 'string', 'Ready');
+        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+        exec(conn, query);   
+         else
+             set(handles.txtStatus, 'string', 'Processing');
+             query = 'UPDATE status_table SET status = 1 WHERE id = 1';
+             exec(conn, query);
+             notAccepted = 1;
+              rejected_Integer = rejected_Integer + notAccepted;
+              reject_string = num2str(rejected_Integer);
+             
+              query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
+              exec(conn, query);
+              
+            set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
+            set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+            set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
+            set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
+            
+            query = 'UPDATE status_table SET status = 0 WHERE id = 1';
+            exec(conn, query);
+            timer = 5;
+            h = msgbox(sprintf('Please wait: %d', timer));
+            pause(timer);
+            delete(h);
+            set(handles.txtStatus, 'string', 'Ready');
+         end
+        else
+      set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');
+      set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
+      set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+      set(handles.edit4, 'ForegroundColor', 'r', 'string', 'X');
+      set(handles.edit5, 'ForegroundColor', 'r', 'string', 'X');
         end
         end
     end
@@ -320,6 +321,7 @@ catch ME
     set(handles.pushbutton1,'enable','on');
     set(handles.pushbutton2,'enable','off');
     system('start C:\xampp8.2.0\xampp-control.exe');
+end
 end
 
 
