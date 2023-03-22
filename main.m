@@ -49,6 +49,7 @@ x = 0;
 [status_apache, result_apache] = system('systemctl is-active apache2');
 [status_mysql, result_mysql] = system('systemctl is-active mysql'); 
 data = urlread('http://localhost/');
+
     if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data) 
         wb = waitbar(x,'Start Opening Camera');
         waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
@@ -474,6 +475,7 @@ set(handles.edit1, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit2, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit3, 'ForegroundColor', 'red', 'string', '');
 set(handles.edit4, 'ForegroundColor', 'red', 'string', '');
+set(handles.edit5, 'ForegroundColor', 'red', 'string', '');
 set(handles.editClassA, 'ForegroundColor', 'red', 'string', '');
 set(handles.editClassB, 'ForegroundColor', 'red', 'string', '');
 set(handles.editRejected, 'ForegroundColor', 'red', 'string', '');
