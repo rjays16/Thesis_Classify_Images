@@ -100,6 +100,7 @@ data = urlread('http://localhost/');
                 predictedLabels = classify(myNet, picture);
                 
                 if predictedLabels == 'ClassA'
+                     set(handles.txtStatus, 'string', 'Processing');
                     set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                     set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);    
                     addClassA = 1;
@@ -116,7 +117,9 @@ data = urlread('http://localhost/');
                     set(handles.txtStatus, 'string', 'Ready');
                     query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
                     exec(conn, query_status_table); 
+                    
                 elseif predictedLabels == 'ClassB'
+                     set(handles.txtStatus, 'string', 'Processing');
                     set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
                     set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);    
                     addClassB = 1;
@@ -124,9 +127,10 @@ data = urlread('http://localhost/');
                     ClassB_string = num2str(ClassB_Interger);
                     query = ['UPDATE banana_process SET total = ', ClassB_string, ' WHERE id = 1'];
                     exec(conn, query);
-                    query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
+                    query_status_table = 'UPDATE status_table SET status = 2 WHERE id = 1';
                     exec(conn, query_status_table);
                     timer = 5;
+                    
                     h = msgbox(sprintf('Please wait: %d', timer));
                     pause(timer);
                     delete(h);
@@ -137,6 +141,7 @@ data = urlread('http://localhost/');
                     set(handles.txtStatus, 'string', 'Ready');
                     query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
                     exec(conn, query_status_table);
+                    
                 else  
                     set(handles.txtStatus, 'string', 'Processing');
                     query = 'UPDATE status_table SET status = 1 WHERE id = 1';
