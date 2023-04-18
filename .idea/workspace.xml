@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="eaede212-2c33-4465-be47-7a0ab78fac5c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/Thesis_Classify_Images.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bridge/package-lock.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/bridge/composer.json</pharConfigPath>
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration">
+    <include_path>
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/lines-of-code" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/bridge/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/bridge/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/bridge/vendor/nette/schema" />
+      <path value="$PROJECT_DIR$/bridge/vendor/nette/utils" />
+      <path value="$PROJECT_DIR$/bridge/vendor/filp/whoops" />
+      <path value="$PROJECT_DIR$/bridge/vendor/dragonmantank/cron-expression" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/bridge/vendor/fruitcake/php-cors" />
+      <path value="$PROJECT_DIR$/bridge/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/event-dispatcher" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/bridge/vendor/graham-campbell/result-type" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/bridge/vendor/dflydev/dot-access-data" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phpoption/phpoption" />
+      <path value="$PROJECT_DIR$/bridge/vendor/fakerphp/faker" />
+      <path value="$PROJECT_DIR$/bridge/vendor/ramsey/collection" />
+      <path value="$PROJECT_DIR$/bridge/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/bridge/vendor/ramsey/uuid" />
+      <path value="$PROJECT_DIR$/bridge/vendor/nesbot/carbon" />
+      <path value="$PROJECT_DIR$/bridge/vendor/brick/math" />
+      <path value="$PROJECT_DIR$/bridge/vendor/tijsverkoyen/css-to-inline-styles" />
+      <path value="$PROJECT_DIR$/bridge/vendor/egulias/email-validator" />
+      <path value="$PROJECT_DIR$/bridge/vendor/league/mime-type-detection" />
+      <path value="$PROJECT_DIR$/bridge/vendor/league/commonmark" />
+      <path value="$PROJECT_DIR$/bridge/vendor/league/flysystem" />
+      <path value="$PROJECT_DIR$/bridge/vendor/league/config" />
+      <path value="$PROJECT_DIR$/bridge/vendor/mockery/mockery" />
+      <path value="$PROJECT_DIR$/bridge/vendor/laravel/framework" />
+      <path value="$PROJECT_DIR$/bridge/vendor/laravel/serializable-closure" />
+      <path value="$PROJECT_DIR$/bridge/vendor/psy/psysh" />
+      <path value="$PROJECT_DIR$/bridge/vendor/laravel/sail" />
+      <path value="$PROJECT_DIR$/bridge/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/bridge/vendor/voku/portable-ascii" />
+      <path value="$PROJECT_DIR$/bridge/vendor/laravel/pint" />
+      <path value="$PROJECT_DIR$/bridge/vendor/laravel/tinker" />
+      <path value="$PROJECT_DIR$/bridge/vendor/laravel/sanctum" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-php80" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/error-handler" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/http-foundation" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-uuid" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/routing" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/event-dispatcher" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/css-selector" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/translation" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/bridge/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/service-contracts" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/mime" />
+      <path value="$PROJECT_DIR$/bridge/vendor/spatie/backtrace" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/finder" />
+      <path value="$PROJECT_DIR$/bridge/vendor/spatie/flare-client-php" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/uid" />
+      <path value="$PROJECT_DIR$/bridge/vendor/spatie/ignition" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/string" />
+      <path value="$PROJECT_DIR$/bridge/vendor/spatie/laravel-ignition" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/translation-contracts" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-intl-idn" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/process" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/event-dispatcher-contracts" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-php72" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/http-kernel" />
+      <path value="$PROJECT_DIR$/bridge/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/var-dumper" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/mailer" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-intl-grapheme" />
+      <path value="$PROJECT_DIR$/bridge/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/bridge/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/bridge/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/bridge/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/bridge/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/bridge/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/bridge/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/bridge/vendor/guzzlehttp/uri-template" />
+      <path value="$PROJECT_DIR$/bridge/vendor/hamcrest/hamcrest-php" />
+      <path value="$PROJECT_DIR$/bridge/vendor/nunomaduro/collision" />
+      <path value="$PROJECT_DIR$/bridge/vendor/nunomaduro/termwind" />
+      <path value="$PROJECT_DIR$/bridge/vendor/composer" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/code-unit" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/cli-parser" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/complexity" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/bridge/vendor/sebastian/type" />
+    </include_path>
+  </component>
+  <component name="ProjectId" id="2ONBqNLHnwZvH7i7uxvzijflHmG" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/tog" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="eaede212-2c33-4465-be47-7a0ab78fac5c" name="Default Changelist" comment="" />
+      <created>1681391351427</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1681391351427</updated>
+      <workItem from="1681391398672" duration="127000" />
+      <workItem from="1681393596137" duration="751000" />
+      <workItem from="1681398464810" duration="47000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="549" y="167" key="FileChooserDialogImpl" timestamp="1681398510060">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1681398510060" />
+  </component>
+</project>
