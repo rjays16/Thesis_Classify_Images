@@ -43,222 +43,105 @@ varargout{1} = handles.output;
 function pushbutton1_Callback(hObject, eventdata, handles) 
 set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
-
-try 
-x = 0;
-[status_apache, result_apache] = system('systemctl is-active apache2');
-[status_mysql, result_mysql] = system('systemctl is-active mysql'); 
-data = urlread('http://localhost/');
-
-    if status_apache == 0 && status_mysql == 0 && strcmp(result_apache, 'active') && strcmp(result_mysql, 'active') || ~isempty(data) 
-        wb = waitbar(x,'Start Opening Camera');
-        waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
-        camera = webcam();
-        waitbar(x + 0.4, wb, 'Classify Images...');
-        alex = alexnet;
-        layers = alex.Layers;
-        layers(23) = fullyConnectedLayer(3);
-        layers(25) = classificationLayer;
-        allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-        [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
-        waitbar(x + 0.6, wb, 'Read Sizes of Images...');
-        opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
-        myNet = trainNetwork(trainingImages, layers, opts);
-        waitbar(x + 0.8, wb, 'Re training Images for classify images');
-        waitbar(x + 1, wb, 'Done');
-        delete(wb); 
-        conn = database('localhost','root','');
-        nnet = alexnet;
-        status = 0;  
-
-        while true
-            picture = camera.snapshot;
-            picture = imresize(picture,[227,227]);
-            image(picture);
-            drawnow;
-            
-            data_ClassA = exec(conn,'SELECT total FROM banana_process WHERE id = 1');
-            data_ClassA = fetch(data_ClassA);
-            a = data_ClassA.Data;
-            ClassA_Interger = a{1};
-            set(handles.editClassA, 'string', a);
-            
-            data_ClassAStat = exec(conn,'SELECT stat FROM banana_process WHERE id = 1');
-            data_ClassAStat = fetch(data_ClassAStat);
-            aStat = data_ClassAStat.Data;
-            ClassAStat_Interger = aStat{1};
-            
-            data_ClassB = exec(conn,'SELECT total FROM banana_process WHERE id = 2');
-            data_ClassB = fetch(data_ClassB);
-            b = data_ClassB.Data; 
-            ClassB_Interger = b{1};
-            set(handles.editClassB, 'string', b);
-            data_ClassBStat = exec(conn,'SELECT stat FROM banana_process WHERE id = 2');
-            data_ClassBStat = fetch(data_ClassBStat);
-            bStat = data_ClassBStat.Data;
-            ClassBStat_Interger = bStat{1};
-            
-            data_Rejected = exec(conn,'SELECT total FROM banana_process WHERE id = 3');
-            data_Rejected = fetch(data_Rejected);
-            rejected = data_Rejected.Data;
-            rejected_Integer = rejected{1};
-            set(handles.editRejected, 'string', rejected);
-            data_RejectedStat = exec(conn,'SELECT stat FROM banana_process WHERE id = 3');
-            data_RejectedStat = fetch(data_RejectedStat);
-            rejectedStat = data_RejectedStat.Data;
-            RejectedStat_Interger = rejectedStat{1};
-   
-            total = rejected_Integer + ClassA_Interger + ClassB_Interger;
-            set(handles.editTotal, 'string', total);
-            label = classify(nnet, picture);
-  
-            if ClassAStat_Interger == 1 || ClassBStat_Interger || RejectedStat_Interger
-                if ClassAStat_Interger == 1 
-                    set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                    set(handles.txtStatus, 'string', 'Processing');
-                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                    set(handles.edit3, 'ForegroundColor', 'g', 'string', 'A');
-                    addClassA = 1;
-                    ClassA_Interger = ClassA_Interger + addClassA;
-                    ClassA_string = num2str(ClassA_Interger);
-                    query = ['UPDATE banana_process SET total = ', ClassA_string, ' WHERE id = 1'];
-                    exec(conn, query);
-                    query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                    exec(conn, query_status_table);
-                    timer = 5;
-                    h = msgbox(sprintf('Please wait: %d', timer));
-                    pause(timer);
-                    delete(h);
-                    set(handles.txtStatus, 'string', 'Ready');
-                    query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                    exec(conn, query_status_table); 
-                    query_stat_tableA = 'UPDATE banana_process SET stat = 0 WHERE id = 1';
-                    exec(conn, query_stat_tableA);
-                elseif ClassBStat_Interger == 1 
-                    set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                    set(handles.txtStatus, 'string', 'Processing');
-                    set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                    set(handles.edit3, 'ForegroundColor', 'g', 'string', 'B');
-                    addClassB = 1;
-                    ClassB_Interger = ClassB_Interger + addClassB;
-                    ClassB_string = num2str(ClassB_Interger);
-                    query = ['UPDATE banana_process SET total = ', ClassB_string, ' WHERE id = 2'];
-                    exec(conn, query);
-                    query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                    exec(conn, query_status_table);
-                    timer = 5;
-                    h = msgbox(sprintf('Please wait: %d', timer));
-                    pause(timer);
-                    delete(h);
-                    set(handles.txtStatus, 'string', 'Ready');
-                    query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                    exec(conn, query_status_table); 
-                    query_stat_tableB = 'UPDATE banana_process SET stat = 0 WHERE id = 2';
-                    exec(conn, query_stat_tableB);
-                else
-                      set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                      set(handles.txtStatus, 'string', 'Processing');
-                      query = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                      exec(conn, query);
-                      notAccepted = 1;
-                      rejected_Integer = rejected_Integer + notAccepted;
-                      reject_string = num2str(rejected_Integer);
-                      query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
-                      exec(conn, query);
-                      set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
-                      set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-                      query = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                      exec(conn, query);
-                      timer = 5;
-                      h = msgbox(sprintf('Please wait: %d', timer));
-                      pause(timer);
-                      delete(h);
-                      set(handles.txtStatus, 'string', 'Ready');
-                      query_stat_Reject = 'UPDATE banana_process SET stat = 0 WHERE id = 3';
-                      exec(conn, query_stat_Reject);
-                end
-            else
-                
-                if label == 'banana'
-                    set(handles.edit1, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));  
-                predictedLabels = classify(myNet, picture);
-                
-                    if predictedLabels == 'ClassA'
-                        set(handles.txtStatus, 'string', 'Processing');
-                        set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                        set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);    
-                        addClassA = 1;
-                        ClassA_Interger = ClassA_Interger + addClassA;
-                        ClassA_string = num2str(ClassA_Interger);
-                        query = ['UPDATE banana_process SET total = ', ClassA_string, ' WHERE id = 1'];
-                        exec(conn, query);
-                        query_status_table = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                        exec(conn, query_status_table);
-                        timer = 5;
-                        h = msgbox(sprintf('Please wait: %d', timer));
-                        pause(timer);
-                        delete(h);
-                        set(handles.txtStatus, 'string', 'Ready');
-                        query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                        exec(conn, query_status_table); 
-                    
-                    elseif predictedLabels == 'ClassB'
-                        set(handles.txtStatus, 'string', 'Processing');
-                        set(handles.edit2, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-                        set(handles.edit3, 'ForegroundColor', 'g', 'string', predictedLabels);    
-                        addClassB = 1;
-                        ClassB_Interger = ClassB_Interger + addClassB;
-                        ClassB_string = num2str(ClassB_Interger);
-                        query = ['UPDATE banana_process SET total = ', ClassB_string, ' WHERE id = 1'];
-                        exec(conn, query);
-                        query_status_table = 'UPDATE status_table SET status = 2 WHERE id = 1';
-                        exec(conn, query_status_table);
-                        timer = 5;
-                    
-                        h = msgbox(sprintf('Please wait: %d', timer));
-                        pause(timer);
-                        delete(h);
-                        set(handles.txtStatus, 'string', 'Ready');
-                        query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                        exec(conn, query_status_table); 
-                    
-                        set(handles.txtStatus, 'string', 'Ready');
-                        query_status_table = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                        exec(conn, query_status_table);
-                    
-                    else  
-                        set(handles.txtStatus, 'string', 'Processing');
-                        query = 'UPDATE status_table SET status = 1 WHERE id = 1';
-                        exec(conn, query);
-                        notAccepted = 1;
-                        rejected_Integer = rejected_Integer + notAccepted;
-                        reject_string = num2str(rejected_Integer);
-                        query = ['UPDATE banana_process SET total = ', reject_string, ' WHERE id = 3'];
-                        exec(conn, query);
-                        set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
-                        set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
-                        query = 'UPDATE status_table SET status = 0 WHERE id = 1';
-                        exec(conn, query);
-                        timer = 5;
-                        h = msgbox(sprintf('Please wait: %d', timer));
-                        pause(timer);
-                        delete(h);
-                        set(handles.txtStatus, 'string', 'Ready');
-                    end
-                else
-                    set(handles.edit1, 'ForegroundColor', 'r', 'string', 'X');
-                    set(handles.edit2, 'ForegroundColor', 'r', 'string', 'X');
-                    set(handles.edit3, 'ForegroundColor', 'r', 'string', 'X');
+ warning off
+    x = 0;
+    wb = waitbar(x,'Start Opening Camera');
+    waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
+    camera = webcam();
+    waitbar(x + 0.4, wb, 'Classify Images...');
+    alex = alexnet;
+    layers = alex.Layers;
+    layers(23) = fullyConnectedLayer(2);
+    layers(25) = classificationLayer;
+    allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
+    [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
+    waitbar(x + 0.6, wb, 'Read Sizes of Images...');
+    opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
+    myNet = trainNetwork(trainingImages, layers, opts);
+    waitbar(x + 0.8, wb, 'Re training Images for classify images');
+    waitbar(x + 1, wb, 'Done');
+    delete(wb); 
+    nnet = alexnet;
+    while true
+        picture = camera.snapshot;
+        picture_resize = imresize(picture,[227,227]);
+        label = classify(myNet, picture_resize);
+        image(picture);
+        drawnow;
+        
+        if label == 'Crack'
+            scale = 600/(max(size(picture(:,:,1))));        
+            picture = imresize(picture,scale*size(picture(:,:,1)));
+            [m,n,~] = size(picture);
+            I = rgb2gray(picture);
+            [f1,f2]=freqspace(size(I),'meshgrid');
+            D=100/size(I,1);
+            LPF = ones(9); 
+            r=f1.^2+f2.^2;
+            for i=1:9
+                for j=1:9
+                    t=r(i,j)/(D*D);
+                    LPF(i,j)=exp(-t);
                 end
             end
+            
+            Y=fft2(double(I)); Y=fftshift(Y);
+            Y=convn(Y,LPF); Y=ifftshift(Y);
+            I_en=ifft2(Y);
+            I_en=imresize(I_en,size(I)); 
+            I_en=uint8(I_en);
+            I_en=imsubtract(I,I_en);
+            I_en=imadd(I_en,uint8(mean2(I)*ones(size(I))));
+            level = roundn(graythresh(I_en),-2);
+            BW = ~im2bw(I_en,level);  
+            BW = double(BW);     
+            i = 25; BW1 = BW;
+            
+            while 1
+                BW2 = BW1; i = i + 1;
+                BW1 = imdilate(BW1,strel('disk',i));  
+                BW1 = bwmorph(BW1,'bridge',inf);      
+                BW1 = imfill(BW1,'holes');            
+                BW1 = imerode(BW1,strel('disk',i-1));   
+                tmp = bwareafilt(BW1,1);              
+                tmp = fix(0.05*sum(sum(tmp)));        
+                BW1  = bwareaopen(BW1,tmp);         
+                CC = bwconncomp(BW1);
+                if CC.NumObjects<2,break;end          
+            end
+            
+            B = bwboundaries(BW1);
+            Dist = zeros(length(B),1);
+            a = Dist; b = Dist;
+            for i=1:length(B)
+                tmp = B{i};
+                D = pdist2(tmp,tmp);
+                [D,tmp] = max(D); [Dist(i),b(i)] = max(D); a(i) = tmp(b(i));
+            end
+            
+            x = '0.075';
+            A = str2double(x); 
+            Dist = Dist*sqrt(A/(n*m));
+            length_text = '';
+            imshow(picture);
+            drawnow;
+            hold on
+            for i=1:length(B)
+                tmp = B{i};
+                plot(tmp(:,2),tmp(:,1),'r','LineWidth',2);
+                plot([tmp(a(i),2),tmp(b(i),2)],[tmp(a(i),1),...
+                tmp(b(i),1)],'*-b','LineWidth',2);
+                text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
+                tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
+            length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
+                tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
+             set(handles.txtLength, 'string', length_text);
+            end
+          else
+            set(handles.txtLength, 'string', 'X');
         end
     end
-catch ME
-    errordlg(['Error checking services: ' ME.message]);
-    set(handles.pushbutton1,'enable','on');
-    set(handles.pushbutton2,'enable','off');
-    system('start C:\xampp8.2.0\xampp-control.exe');
-end
+   
 
 
 
@@ -747,3 +630,47 @@ function editSpot_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+function txtLength_Callback(hObject, eventdata, handles)
+% hObject    handle to txtLength (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of txtLength as text
+%        str2double(get(hObject,'String')) returns contents of txtLength as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function txtLength_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to txtLength (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton1.
+function pushbutton13_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton2.
+function pushbutton14_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton3.
+function pushbutton15_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
