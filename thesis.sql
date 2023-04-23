@@ -23,15 +23,16 @@ DROP TABLE IF EXISTS `banana_process`;
 CREATE TABLE `banana_process` (
   `id` bigint(255) DEFAULT NULL,
   `class` varchar(10) DEFAULT NULL,
-  `total` bigint(255) DEFAULT NULL
+  `total` bigint(255) DEFAULT NULL,
+  `stat` bigint(255) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `banana_process` */
 
-insert  into `banana_process`(`id`,`class`,`total`) values 
-(1,'A',5),
-(2,'B',11),
-(3,'Reject',1);
+insert  into `banana_process`(`id`,`class`,`total`,`stat`) values 
+(1,'A',1,0),
+(2,'B',1,0),
+(3,'Reject',1,0);
 
 /*Table structure for table `status_table` */
 
@@ -45,7 +46,7 @@ CREATE TABLE `status_table` (
 /*Data for the table `status_table` */
 
 insert  into `status_table`(`id`,`status`) values 
-(1,'0');
+(0,'0');
 
 /*Table structure for table `user` */
 
