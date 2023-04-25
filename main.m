@@ -135,10 +135,12 @@ set(handles.pushbutton2,'enable','on');
                 tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
             length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
                 tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-             set(handles.txtLength, 'string', length_text);
+             set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'X');
+             set(handles.txtLength, 'ForegroundColor', 'g', 'string', length_text);
             end
-          else
-            set(handles.txtLength, 'string', 'X');
+        else
+            set(handles.txtLength, 'ForegroundColor', 'r', 'string', 'X');  
+            set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'X');
         end
     end
    
@@ -674,3 +676,26 @@ function pushbutton15_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+
+function txtCrack_Callback(hObject, eventdata, handles)
+% hObject    handle to txtCrack (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of txtCrack as text
+%        str2double(get(hObject,'String')) returns contents of txtCrack as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function txtCrack_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to txtCrack (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
