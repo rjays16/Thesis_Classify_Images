@@ -135,7 +135,7 @@ set(handles.pushbutton2,'enable','on');
                 tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
             length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
                 tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-             set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'X');
+             set(handles.txtCrack, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
              set(handles.txtLength, 'ForegroundColor', 'g', 'string', length_text);
             end
         else
