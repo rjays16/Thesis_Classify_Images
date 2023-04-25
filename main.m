@@ -52,7 +52,7 @@ try
     waitbar(x + 0.4, wb, 'Classify Images...');
     alex = alexnet;
     layers = alex.Layers;
-    layers(23) = fullyConnectedLayer(2);
+    layers(23) = fullyConnectedLayer(3);
     layers(25) = classificationLayer;
     allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
     [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
@@ -62,7 +62,6 @@ try
     waitbar(x + 0.8, wb, 'Re training Images for classify images');
     waitbar(x + 1, wb, 'Done');
     delete(wb); 
-    nnet = alexnet;
     while true
         picture = camera.snapshot;
         picture_resize = imresize(picture,[227,227]);
@@ -71,6 +70,7 @@ try
         drawnow;
         
         if label == 'Crack'
+            set(handles.txtCrack, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
             scale = 600/(max(size(picture(:,:,1))));        
             picture = imresize(picture,scale*size(picture(:,:,1)));
             [m,n,~] = size(picture);
@@ -134,22 +134,20 @@ try
                 tmp(b(i),1)],'*-b','LineWidth',2);
                 text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
                 tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-            length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
+                length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
                 tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-             set(handles.txtCrack, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-             set(handles.txtLength, 'ForegroundColor', 'g', 'string', length_text);
+            %% set(handles.txtLength, 'ForegroundColor', 'g', 'string', length_text);
             end
         else
-            set(handles.txtLength, 'ForegroundColor', 'r', 'string', 'X');  
+           %% set(handles.txtLength, 'ForegroundColor', 'r', 'string', 'X');  
             set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'X');
         end
     end
 catch ME
-errordlg(['Error checking services: ' ME.message]);
-set(handles.pushbutton1,'enable','on');
-set(handles.pushbutton2,'enable','off');
+    errordlg(['Eror checking services:' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
 end
-   
 
 
 
