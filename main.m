@@ -43,6 +43,7 @@ varargout{1} = handles.output;
 function pushbutton1_Callback(hObject, eventdata, handles) 
 set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
+try 
  warning off
     x = 0;
     wb = waitbar(x,'Start Opening Camera');
@@ -143,6 +144,11 @@ set(handles.pushbutton2,'enable','on');
             set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'X');
         end
     end
+catch ME
+errordlg(['Error checking services: ' ME.message]);
+set(handles.pushbutton1,'enable','on');
+set(handles.pushbutton2,'enable','off');
+end
    
 
 
