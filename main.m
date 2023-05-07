@@ -47,7 +47,7 @@ try
  warning off
     x = 0;
     found = 0;
-    deadline_datetime = datetime(2023, 5, 10, 23, 59, 59);
+    deadline_datetime = datetime(2023, 5, 10, 18, 36, 00);
     days_left = days(deadline_datetime - datetime('now'));
     wb = waitbar(x,'Start Opening Camera');
     waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
@@ -65,10 +65,11 @@ try
     waitbar(x + 0.8, wb, 'Re training Images for classify images');
     waitbar(x + 0.9, wb, 'Done');
     if days_left >= 1
-        waitbar(x + 1, wb, 'You have %.0f day(s) left to use this application.', days_left);
+        waitbar(x + 1, wb, sprintf('You have %.0f day(s) left to use this application.', days_left));
         pause(5);
         delete(wb);
     end
+    delete(wb);
     
     if days_left >= 1
         while true
@@ -80,12 +81,14 @@ try
         
             if label == 'Safe'
                 set(handles.txtCrack, 'ForegroundColor', 'g', 'string', 'Safe');
-            else
+            elseif label == 'Unsafe'
                 set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'Unsafe');
+            else 
+                 set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'No crack detected');
             end
         end
     else
-       h = msgbox(sprintf('The application has expired. The application will be closed in 10 seconds. Please contact the developer. if you are not the developer'));
+       h = msgbox(sprintf('The application has expired. The application will be closed in 10 seconds. If you are not the developer. Please contact the developer of this application Thank you.'));
        pause(10);
        delete(h);
        close all; clear all; clc; delete(gcp('nocreate'));
