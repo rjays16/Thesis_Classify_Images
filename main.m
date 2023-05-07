@@ -157,7 +157,10 @@ try
             end
         end
     else
-       msgbox(sprintf('The application has expired. Please contact the developer. if you are not the developer'));
+       h = msgbox(sprintf('The application has expired. The application will be closed in 10 seconds. Please contact the developer. if you are not the developer'));
+       pause(10);
+       delete(h);
+       close all; clear all; clc; delete(gcp('nocreate'));
     end
 catch ME
     errordlg(['Eror checking services:' ME.message]);
