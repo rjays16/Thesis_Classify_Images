@@ -84,7 +84,7 @@ try
             elseif label == 'Unsafe'
                 set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'Unsafe');
             else 
-                 set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'No crack detected');
+                 set(handles.txtCrack, 'ForegroundColor', 'b', 'string', 'No crack detected');
             end
         end
     else
