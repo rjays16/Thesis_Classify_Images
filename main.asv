@@ -43,13 +43,13 @@ varargout{1} = handles.output;
 function pushbutton1_Callback(hObject, eventdata, handles) 
 set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
-
+try 
  warning off
     x = 0;
     found = 0;
     myImages = 'myImages';
     deadline_datetime = datetime(2023, 5, 10, 23, 59, 59);
-    myImagesAdd = datetime(2023, 5, 10, 23, 59, 59) - datetime('now');
+    myImagesDateAdd = 
     days_left = days(deadline_datetime - datetime('now'));
     wb = waitbar(x,'Start Opening Camera');
     waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
@@ -75,10 +75,9 @@ set(handles.pushbutton2,'enable','on');
     
     if days_left >= 1
         while true
-            if myImagesAdd <= 1
+            if datetime(2023, 5, 7, 23, 59, 59)
                     if isfolder(myImages)
                         rmdir(myImages, 's');
-                         close all; clear all; clc; delete(gcp('nocreate'));
                     end
             end
             picture = camera.snapshot;
@@ -101,7 +100,11 @@ set(handles.pushbutton2,'enable','on');
        delete(h);
        close all; clear all; clc; delete(gcp('nocreate'));
     end
-
+catch ME
+    errordlg(['Eror checking services:' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
+end
 
 
 
