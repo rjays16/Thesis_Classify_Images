@@ -46,6 +46,9 @@ set(handles.pushbutton2,'enable','on');
 try 
  warning off
     x = 0;
+    found = 0;
+    deadline_datetime = datetime(2023, 5, 10, 23, 59, 59);
+    days_left = days(deadline_datetime - datetime('now'));
     wb = waitbar(x,'Start Opening Camera');
     waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
     camera = webcam();
@@ -60,88 +63,101 @@ try
     opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
     myNet = trainNetwork(trainingImages, layers, opts);
     waitbar(x + 0.8, wb, 'Re training Images for classify images');
-    waitbar(x + 1, wb, 'Done');
-    delete(wb); 
-    while true
-        picture = camera.snapshot;
-        picture_resize = imresize(picture,[227,227]);
-        label = classify(myNet, picture_resize);
-        image(picture);
-        drawnow;
-        
-        if label == 'Crack'
-            set(handles.txtCrack, 'ForegroundColor', 'g', 'string', char(hex2dec('2713')));
-            scale = 600/(max(size(picture(:,:,1))));        
-            picture = imresize(picture,scale*size(picture(:,:,1)));
-            [m,n,~] = size(picture);
-            I = rgb2gray(picture);
-            [f1,f2]=freqspace(size(I),'meshgrid');
-            D=100/size(I,1);
-            LPF = ones(9); 
-            r=f1.^2+f2.^2;
-            for i=1:9
-                for j=1:9
-                    t=r(i,j)/(D*D);
-                    LPF(i,j)=exp(-t);
-                end
-            end
-            
-            Y=fft2(double(I)); Y=fftshift(Y);
-            Y=convn(Y,LPF); Y=ifftshift(Y);
-            I_en=ifft2(Y);
-            I_en=imresize(I_en,size(I)); 
-            I_en=uint8(I_en);
-            I_en=imsubtract(I,I_en);
-            I_en=imadd(I_en,uint8(mean2(I)*ones(size(I))));
-            level = roundn(graythresh(I_en),-2);
-            BW = ~im2bw(I_en,level);  
-            BW = double(BW);     
-            i = 25; BW1 = BW;
-            
-            while 1
-                BW2 = BW1; i = i + 1;
-                BW1 = imdilate(BW1,strel('disk',i));  
-                BW1 = bwmorph(BW1,'bridge',inf);      
-                BW1 = imfill(BW1,'holes');            
-                BW1 = imerode(BW1,strel('disk',i-1));   
-                tmp = bwareafilt(BW1,1);              
-                tmp = fix(0.05*sum(sum(tmp)));        
-                BW1  = bwareaopen(BW1,tmp);         
-                CC = bwconncomp(BW1);
-                if CC.NumObjects<2,break;end          
-            end
-            
-            B = bwboundaries(BW1);
-            Dist = zeros(length(B),1);
-            a = Dist; b = Dist;
-            for i=1:length(B)
-                tmp = B{i};
-                D = pdist2(tmp,tmp);
-                [D,tmp] = max(D); [Dist(i),b(i)] = max(D); a(i) = tmp(b(i));
-            end
-            
-            x = '0.075';
-            A = str2double(x); 
-            Dist = Dist*sqrt(A/(n*m));
-            length_text = '';
-            imshow(picture);
+    waitbar(x + 0.9, wb, 'Done');
+    if days_left >= 1
+        waitbar(x + 1, wb, 'You have %.0f day(s) left to use this application.', days_left);
+        pause(5);
+        delete(wb);
+    end
+    
+    if days_left >= 1
+        while true
+            picture = camera.snapshot;
+            picture_resize = imresize(picture,[227,227]);
+            label = classify(myNet, picture_resize);
+            image(picture);
             drawnow;
-            hold on
-            for i=1:length(B)
-                tmp = B{i};
-                plot(tmp(:,2),tmp(:,1),'r','LineWidth',2);
-                plot([tmp(a(i),2),tmp(b(i),2)],[tmp(a(i),1),...
-                tmp(b(i),1)],'*-b','LineWidth',2);
-                text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
-                tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-                length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
-                tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-            %% set(handles.txtLength, 'ForegroundColor', 'g', 'string', length_text);
+        
+            if label == 'Crack'
+                set(handles.txtCrack, 'ForegroundColor', 'g', 'string', 'Safe');
+                scale = 600/(max(size(picture(:,:,1))));        
+                picture = imresize(picture,scale*size(picture(:,:,1)));
+                [m,n,~] = size(picture);
+                I = rgb2gray(picture);
+                [f1,f2]=freqspace(size(I),'meshgrid');
+                D=100/size(I,1);
+                LPF = ones(9); 
+                r=f1.^2+f2.^2;
+                for i=1:9
+                    for j=1:9
+                        t=r(i,j)/(D*D);
+                        LPF(i,j)=exp(-t);
+                    end
+                end
+            
+                Y=fft2(double(I)); Y=fftshift(Y);
+                Y=convn(Y,LPF); Y=ifftshift(Y);
+                I_en=ifft2(Y);
+                I_en=imresize(I_en,size(I)); 
+                I_en=uint8(I_en);
+                I_en=imsubtract(I,I_en);
+                I_en=imadd(I_en,uint8(mean2(I)*ones(size(I))));
+                level = roundn(graythresh(I_en),-2);
+                BW = ~im2bw(I_en,level);  
+                BW = double(BW);     
+                i = 25; BW1 = BW;
+            
+                while 1
+                    BW2 = BW1; i = i + 1;
+                    BW1 = imdilate(BW1,strel('disk',i));  
+                    BW1 = bwmorph(BW1,'bridge',inf);      
+                    BW1 = imfill(BW1,'holes');            
+                    BW1 = imerode(BW1,strel('disk',i-1));   
+                    tmp = bwareafilt(BW1,1);              
+                    tmp = fix(0.05*sum(sum(tmp)));        
+                    BW1  = bwareaopen(BW1,tmp);         
+                    CC = bwconncomp(BW1);
+                    if CC.NumObjects<2,break;end          
+                end
+            
+                B = bwboundaries(BW1);
+                Dist = zeros(length(B),1);
+                a = Dist; b = Dist;
+                for i=1:length(B)
+                    tmp = B{i};
+                    D = pdist2(tmp,tmp);
+                    [D,tmp] = max(D); [Dist(i),b(i)] = max(D); a(i) = tmp(b(i));
+                end
+            
+                x = '0.075';
+                A = str2double(x); 
+                Dist = Dist*sqrt(A/(n*m));
+                length_text = '';
+                imshow(picture);
+                drawnow;
+                hold on
+                for i=1:length(B)
+                    found = 1;
+                    if found == 1 
+                        tmp = B{i};
+                        plot(tmp(:,2),tmp(:,1),'r','LineWidth',2);
+                        plot([tmp(a(i),2),tmp(b(i),2)],[tmp(a(i),1),...
+                        tmp(b(i),1)],'*-b','LineWidth',2);
+                        text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
+                        tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
+                        length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
+                        tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
+                        found = 0;
+                    break;
+                    end
+                    pause(5);
+                end
+            else
+                set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'Unsafe');
             end
-        else
-           %% set(handles.txtLength, 'ForegroundColor', 'r', 'string', 'X');  
-            set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'X');
         end
+    else
+       msgbox(sprintf('The application has expired. Please contact the developer. if you are not the developer'));
     end
 catch ME
     errordlg(['Eror checking services:' ME.message]);
