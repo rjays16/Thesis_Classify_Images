@@ -78,80 +78,8 @@ try
             image(picture);
             drawnow;
         
-            if label == 'Crack'
+            if label == 'Safe'
                 set(handles.txtCrack, 'ForegroundColor', 'g', 'string', 'Safe');
-                scale = 600/(max(size(picture(:,:,1))));        
-                picture = imresize(picture,scale*size(picture(:,:,1)));
-                [m,n,~] = size(picture);
-                I = rgb2gray(picture);
-                [f1,f2]=freqspace(size(I),'meshgrid');
-                D=100/size(I,1);
-                LPF = ones(9); 
-                r=f1.^2+f2.^2;
-                for i=1:9
-                    for j=1:9
-                        t=r(i,j)/(D*D);
-                        LPF(i,j)=exp(-t);
-                    end
-                end
-            
-                Y=fft2(double(I)); Y=fftshift(Y);
-                Y=convn(Y,LPF); Y=ifftshift(Y);
-                I_en=ifft2(Y);
-                I_en=imresize(I_en,size(I)); 
-                I_en=uint8(I_en);
-                I_en=imsubtract(I,I_en);
-                I_en=imadd(I_en,uint8(mean2(I)*ones(size(I))));
-                level = roundn(graythresh(I_en),-2);
-                BW = ~im2bw(I_en,level);  
-                BW = double(BW);     
-                i = 25; BW1 = BW;
-            
-                while 1
-                    BW2 = BW1; i = i + 1;
-                    BW1 = imdilate(BW1,strel('disk',i));  
-                    BW1 = bwmorph(BW1,'bridge',inf);      
-                    BW1 = imfill(BW1,'holes');            
-                    BW1 = imerode(BW1,strel('disk',i-1));   
-                    tmp = bwareafilt(BW1,1);              
-                    tmp = fix(0.05*sum(sum(tmp)));        
-                    BW1  = bwareaopen(BW1,tmp);         
-                    CC = bwconncomp(BW1);
-                    if CC.NumObjects<2,break;end          
-                end
-            
-                B = bwboundaries(BW1);
-                Dist = zeros(length(B),1);
-                a = Dist; b = Dist;
-                for i=1:length(B)
-                    tmp = B{i};
-                    D = pdist2(tmp,tmp);
-                    [D,tmp] = max(D); [Dist(i),b(i)] = max(D); a(i) = tmp(b(i));
-                end
-            
-                x = '0.075';
-                A = str2double(x); 
-                Dist = Dist*sqrt(A/(n*m));
-                length_text = '';
-                imshow(picture);
-                drawnow;
-                hold on
-                for i=1:length(B)
-                    found = 1;
-                    if found == 1 
-                        tmp = B{i};
-                        plot(tmp(:,2),tmp(:,1),'r','LineWidth',2);
-                        plot([tmp(a(i),2),tmp(b(i),2)],[tmp(a(i),1),...
-                        tmp(b(i),1)],'*-b','LineWidth',2);
-                        text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
-                        tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-                        length_text = text(1+0.5*sum([tmp(a(i),2),tmp(b(i),2)]),1+0.5*sum([tmp(a(i),1),...
-                        tmp(b(i),1)]),num2str(Dist(i)),'Color','k','FontSize',20);
-                        found = 0;
-                    break;
-                    end
-                    pause(5);
-                end
             else
                 set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'Unsafe');
             end
