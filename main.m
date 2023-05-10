@@ -47,10 +47,6 @@ set(handles.pushbutton2,'enable','on');
  warning off
     x = 0;
     found = 0;
-    myImages = 'myImages';
-    deadline_datetime = datetime(2023, 5, 10, 23, 59, 59);
-    myImagesAdd = datetime(2023, 5, 10, 23, 59, 59) - datetime('now');
-    days_left = days(deadline_datetime - datetime('now'));
     wb = waitbar(x,'Start Opening Camera');
     waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
     camera = webcam();
@@ -65,22 +61,10 @@ set(handles.pushbutton2,'enable','on');
     opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
     myNet = trainNetwork(trainingImages, layers, opts);
     waitbar(x + 0.8, wb, 'Re training Images for classify images');
-    waitbar(x + 0.9, wb, 'Done');
-    if days_left >= 1
-        waitbar(x + 1, wb, sprintf('You have %.0f day(s) left to use this application.', days_left));
-        pause(5);
-        delete(wb);
-    end
+    waitbar(x + 1, wb, 'Done');
     delete(wb);
     
-    if days_left >= 1
         while true
-            if myImagesAdd <= 1
-                    if isfolder(myImages)
-                        rmdir(myImages, 's');
-                         close all; clear all; clc; delete(gcp('nocreate'));
-                    end
-            end
             picture = camera.snapshot;
             picture_resize = imresize(picture,[227,227]);
             label = classify(myNet, picture_resize);
@@ -95,11 +79,6 @@ set(handles.pushbutton2,'enable','on');
                  set(handles.txtCrack, 'ForegroundColor', 'b', 'string', 'No crack detected');
             end
         end
-    else
-       h = msgbox(sprintf('The application has expired. The application will be closed in 10 seconds. If you are not the developer. Please contact the developer of this application Thank you.'));
-       pause(10);
-       delete(h);
-       close all; clear all; clc; delete(gcp('nocreate'));
     end
 
 
