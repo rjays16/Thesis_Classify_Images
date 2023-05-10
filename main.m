@@ -44,42 +44,67 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 set(handles.pushbutton1,'enable','off');
 set(handles.pushbutton2,'enable','on');
 
- warning off
-    x = 0;
-    found = 0;
-    wb = waitbar(x,'Start Opening Camera');
-    waitbar(x + 0.2, wb, 'Start Opening Camera...'); 
-    camera = webcam();
-    waitbar(x + 0.4, wb, 'Classify Images...');
-    alex = alexnet;
-    layers = alex.Layers;
-    layers(23) = fullyConnectedLayer(3);
-    layers(25) = classificationLayer;
-    allImages = imageDatastore('myImages', 'IncludeSubfolders', true, 'LabelSource', 'foldernames');
-    [trainingImages, testImages] = splitEachLabel(allImages, 0.8, 'randomize');
-    waitbar(x + 0.6, wb, 'Read Sizes of Images...');
-    opts = trainingOptions('sgdm', 'InitialLearnRate', 0.001, 'MaxEpochs', 20, 'MiniBatchSize', 64);
-    myNet = trainNetwork(trainingImages, layers, opts);
-    waitbar(x + 0.8, wb, 'Re training Images for classify images');
-    waitbar(x + 1, wb, 'Done');
-    delete(wb);
-    
-        while true
-            picture = camera.snapshot;
-            picture_resize = imresize(picture,[227,227]);
-            label = classify(myNet, picture_resize);
-            image(picture);
-            drawnow;
-        
-            if label == 'Safe'
-                set(handles.txtCrack, 'ForegroundColor', 'g', 'string', 'Safe');
-            elseif label == 'Unsafe'
-                set(handles.txtCrack, 'ForegroundColor', 'r', 'string', 'Unsafe');
-            else 
-                 set(handles.txtCrack, 'ForegroundColor', 'b', 'string', 'No crack detected');
-            end
-        end
-    end
+global net;
+global imds;
+global trainingLables;
+global augmentedTestSet;
+global trainingFeatures;
+global featureLayer;
+global testSet;
+global imageSize;
+global classifier;
+
+
+try
+rootFolder = fullfile('myImages');
+
+%%
+categories = {'Safe', 'Unsafe', 'Unknown'};
+
+imds = imageDatastore(fullfile(rootFolder,categories), 'LabelSource', 'foldernames');
+
+Safe = find(imds.Labels == 'Safe', 1);
+Unsafe = find(imds.Labels == 'Unsafe', 1);
+Unknown = find(imds.Labels == 'Unkown', 1);
+gaborg = p();
+%%
+tbl = countEachLabel(imds);
+minSetCount = min(tbl{:,2});
+
+%%
+imds = splitEachLabel(imds, minSetCount,'randomize');
+countEachLabel(imds);
+
+%%
+net = resnet50();
+net.Layers(1);
+net.Layers(end);
+%%
+numel(net.Layers(end).ClassNames);
+[trainingSet, testSet] = splitEachLabel(imds, 0.3, 'randomize');
+imageSize = net.Layers(1).InputSize;
+
+%%
+augmentedTrainingSet = augmentedImageDatastore(imageSize, trainingSet, 'ColorPreprocessing', 'gray2rgb');
+augmentedTestSet = augmentedImageDatastore(imageSize, testSet,'ColorPreprocessing', 'gray2rgb');
+
+%%
+% w1 = net.Layers(2).Weights;
+% w1 = mat2gray(w1);
+
+%%
+featureLayer = 'fc1000';
+trainingFeatures = activations(net, augmentedTrainingSet, featureLayer, 'MiniBatchSize', 32, 'OutputAs', 'columns');
+
+%%
+trainingLables = trainingSet.Labels;
+classifier = fitcecoc(trainingFeatures, trainingLables, 'Learner', 'Linear', 'Coding', 'onevsall', 'ObservationsIn', 'columns');
+
+catch ME
+    errordlg(['Eror checking services:' ME.message]);
+    set(handles.pushbutton1,'enable','on');
+    set(handles.pushbutton2,'enable','off');
+end
 
 
 
